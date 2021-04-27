@@ -2,7 +2,7 @@
   (:require
     ["@material-ui/core/Snackbar" :as Snackbar]
     [athens.config]
-    [athens.style]
+    [athens.style :refer [color DEPTH-SHADOWS]]
     [athens.subs]
     [athens.views.app-toolbar :as app-toolbar]
     [athens.views.athena :refer [athena-component]]
@@ -29,6 +29,18 @@
    :grid-template-columns "auto 1fr auto"
    :grid-template-rows "auto 1fr auto"
    :height "100vh"})
+
+
+(def alert-message-style
+  {:background "#000"
+   :color "#fff"
+   :padding "0.25rem 1rem"
+   :border-radius "1.25rem"
+   :box-shadow (:16 DEPTH-SHADOWS)
+   :background-clip "padding-box"
+   :border [["1px solid " (color :border-color)]]
+   ::stylefy/manual [[:&.success {:background (color :confirmation-color)}]
+                     [:&.warning {:background (color :warning-color)}]]})
 
 
 ;;; Components
@@ -72,11 +84,10 @@
           {:message msg
            :open (boolean msg)}
           [:span
-           {:style {:background-color (case type
-                                        :success "green"
-                                        "red")
-                    :padding "10px 20px"
-                    :color "white"}}
+           (stylefy/use-style alert-message-style
+                              {:class (case type
+                                        :success "success"
+                                        "warning")})
            msg]])
        [athena-component]
        (cond
