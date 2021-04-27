@@ -32,15 +32,15 @@
 
 
 (def alert-message-style
-  {:background "#000"
-   :color "#fff"
+  {:color (color :background-plus-2)
+   :background (color :body-text-color)
    :padding "0.25rem 1rem"
    :border-radius "1.25rem"
    :box-shadow (:16 DEPTH-SHADOWS)
-   :background-clip "padding-box"
-   :border [["1px solid " (color :border-color)]]
-   ::stylefy/manual [[:&.success {:background (color :confirmation-color)}]
-                     [:&.warning {:background (color :warning-color)}]]})
+   ::stylefy/manual [[:&.success {:background (color :confirmation-color)
+                                  :color "#fff"}]
+                     [:&.warning {:background (color :warning-color)
+                                  :color "#fff"}]]})
 
 
 ;;; Components
