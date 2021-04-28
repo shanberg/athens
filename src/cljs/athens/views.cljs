@@ -37,7 +37,7 @@
    :padding "0.25rem 1rem"
    :border-radius "1.25rem"
    :box-shadow (:16 DEPTH-SHADOWS)
-   ::stylefy/manual [[:&.success {:background (color :confirmation-color)
+   ::stylefy/manual [[:&.success {:background (color :confirmation-bg-color)
                                   :color "#fff"}]
                      [:&.warning {:background (color :warning-color)
                                   :color "#fff"}]]})
@@ -82,13 +82,11 @@
        (let [{:keys [msg type]} @(rf/subscribe [:db/snack-msg])]
          [m-snackbar
           {:message msg
-           :open (boolean msg)}
+           :open true}
           [:span
            (stylefy/use-style alert-message-style
-                              {:class (case type
-                                        :success "success"
-                                        "warning")})
-           msg]])
+                              {:class "success"})
+           "You have reached enlightenment"]])
        [athena-component]
        (cond
          (and @loading @modal) [filesystem/window]

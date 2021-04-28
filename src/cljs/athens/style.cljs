@@ -2,7 +2,7 @@
   (:require
     [athens.config :as config]
     [athens.util :as util]
-    [garden.color :refer [opacify hex->hsl]]
+    [garden.color :refer [opacify hex->hsl hsl->hex darken]]
     [stylefy.core :as stylefy]))
 
 
@@ -12,6 +12,7 @@
    :text-highlight-color "#FBBE63"
    :warning-color       "#DE3C21"
    :confirmation-color  "#189E36"
+   :confirmation-bg-color (hsl->hex (darken "#189E36" 5))
    :header-text-color   "#BABABA"
    :body-text-color     "#AAA"
    :border-color        "hsla(32, 81%, 90%, 0.08)"
@@ -20,7 +21,6 @@
    :background-color    "#1A1A1A"
    :background-plus-1   "#222"
    :background-plus-2   "#333"
-
    :graph-control-bg    "#272727"
    :graph-control-color "white"
    :graph-node-normal   "#909090"
@@ -36,6 +36,7 @@
    :text-highlight-color "#ffdb8a"
    :warning-color       "#D20000"
    :confirmation-color  "#009E23"
+   :confirmation-bg-color (hsl->hex (darken "#009E23" 5))
    :header-text-color   "#322F38"
    :body-text-color     "#433F38"
    :border-color        "hsla(32, 81%, 10%, 0.08)"
