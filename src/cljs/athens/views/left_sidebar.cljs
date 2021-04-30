@@ -18,6 +18,7 @@
 
 (def left-sidebar-style
   {:width 0
+   :--left-sidebar-open-width "clamp(100px, 16vw, 16vw)"
    :grid-area "left-sidebar"
    :height "100%"
    :display "flex"
@@ -38,12 +39,12 @@
                                   :grid-gap "0.25rem"}
                          :small-icon {:font-size "16px"}
                          :large-icon {:font-size "22px"}}
-   ::stylefy/manual [[:&.is-open {:width "18rem"}]
+   ::stylefy/manual [[:&.is-open {:width "var(--left-sidebar-open-width)"}]
                      [:&.is-closed {:width "0"}]]})
 
 
 (def left-sidebar-content-style
-  {:width "18rem"
+  {:width "var(--left-sidebar-open-width)"
    :height "100%"
    :display "flex"
    :flex-direction "column"
