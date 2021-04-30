@@ -18,7 +18,8 @@
 
 (def left-sidebar-style
   {:width 0
-   :--left-sidebar-open-width "clamp(100px, 16vw, 16vw)"
+  ;;  :--left-sidebar-open-width "clamp(100px, 16vw, 16vw)"
+   :--left-sidebar-open-width "200px"
    :grid-area "left-sidebar"
    :height "100%"
    :display "flex"
