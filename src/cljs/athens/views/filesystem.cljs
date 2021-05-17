@@ -258,7 +258,7 @@
         close-modal       (fn []
                             (when-not @loading
                               (dispatch [:modal/toggle])))
-        el (.. js/document (querySelector "#app"))
+        el (.. js/document (querySelector "body"))
         remote-graph-conf (subscribe [:db/remote-graph-conf])
         db-filepath       (subscribe [:db/filepath])
         state             (r/atom {:input     ""

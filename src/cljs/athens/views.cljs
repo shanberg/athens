@@ -8,6 +8,7 @@
     [athens.views.athena :refer [athena-component]]
     [athens.views.devtool :refer [devtool-component]]
     [athens.views.filesystem :as filesystem]
+    [athens.views.help :as help]
     [athens.views.left-sidebar :as left-sidebar]
     [athens.views.pages.core :as pages]
     [athens.views.right-sidebar :as right-sidebar]
@@ -90,5 +91,6 @@
                  [app-toolbar/app-toolbar]
                  [left-sidebar/left-sidebar]
                  [pages/view]
+                 [help/help]
                  [right-sidebar/right-sidebar]
                  [devtool-component]]])])))

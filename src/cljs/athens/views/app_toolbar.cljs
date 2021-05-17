@@ -27,7 +27,7 @@
     [athens.views.filesystem :as filesystem]
     [athens.views.presence :as presence]
     [athens.ws-client :as ws]
-    [re-frame.core :refer [subscribe dispatch]]
+    [re-frame.core :refer [subscribe dispatch reg-sub]]
     [reagent.core :as r]
     [stylefy.core :as stylefy :refer [use-style]]))
 
@@ -85,6 +85,14 @@
                     {:opacity "0"}]
                    [:to
                     {:opacity "1"}])
+
+
+;; subscriptions
+
+(reg-sub
+ :show-help?
+ (fn [db _]
+   (:show-help? db)))
 
 
 ;;; Components
@@ -147,13 +155,12 @@
          :on-close close-modal}]])))
 
 
-
-
 (defn app-toolbar
   []
   (let [left-open?        (subscribe [:left-sidebar/open])
         right-open?       (subscribe [:right-sidebar/open])
         route-name        (subscribe [:current-route/name])
+        show-help?        (subscribe [:show-help?])
         electron?         (util/electron?)
         theme-dark        (subscribe [:theme/dark])
         remote-graph-conf (subscribe [:db/remote-graph-conf])
@@ -242,7 +249,9 @@
              [:> LibraryBooks]]
             [separator]
             ;; obnoxious line separator
-            [button {:on-click #(js/alert "help popup") :title "Help Popup"}
+            [button {:on-click #(dispatch [:toggle-help])
+                     :active @show-help?
+                     :title "Help Popup"}
              [:> HelpOutline]]
             ;; obnoxious line separator
             [separator]]
