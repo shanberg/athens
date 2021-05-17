@@ -29,6 +29,12 @@
     db/rfdb))
 
 
+(reg-event-db
+ :toggle-help
+ (fn [db _]
+   (update db :show-help? not)))
+
+
 (reg-event-fx
   :db/update-filepath
   (fn [{:keys [db]} [_ filepath]]

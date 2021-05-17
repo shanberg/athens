@@ -1,31 +1,32 @@
 (ns athens.views.app-toolbar
   (:require
-    ["@material-ui/icons/BubbleChart" :default BubbleChart]
-    ["@material-ui/icons/ChevronLeft" :default ChevronLeft]
-    ["@material-ui/icons/ChevronRight" :default ChevronRight]
-    ["@material-ui/icons/FiberManualRecord" :default FiberManualRecord]
-    ["@material-ui/icons/FileCopy" :default FileCopy]
-    ["@material-ui/icons/LibraryBooks" :default LibraryBooks]
-    ["@material-ui/icons/Menu" :default Menu]
-    ["@material-ui/icons/MergeType" :default MergeType]
-    ["@material-ui/icons/Replay" :default Replay]
-    ["@material-ui/icons/Search" :default Search]
-    ["@material-ui/icons/Settings" :default Settings]
-    ["@material-ui/icons/Today" :default Today]
-    ["@material-ui/icons/ToggleOff" :default ToggleOff]
-    ["@material-ui/icons/ToggleOn" :default ToggleOn]
-    ["@material-ui/icons/VerticalSplit" :default VerticalSplit]
-    [athens.router :as router]
-    [athens.style :refer [color]]
-    [athens.subs]
-    [athens.util :as util]
-    [athens.views.buttons :refer [button]]
-    [athens.views.filesystem :as filesystem]
-    [athens.views.presence :as presence]
-    [athens.ws-client :as ws]
-    [re-frame.core :refer [subscribe dispatch]]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy :refer [use-style]]))
+   ["@material-ui/icons/BubbleChart" :default BubbleChart]
+   ["@material-ui/icons/ChevronLeft" :default ChevronLeft]
+   ["@material-ui/icons/ChevronRight" :default ChevronRight]
+   ["@material-ui/icons/FiberManualRecord" :default FiberManualRecord]
+   ["@material-ui/icons/FileCopy" :default FileCopy]
+   ["@material-ui/icons/HelpOutline" :default HelpOutline]
+   ["@material-ui/icons/LibraryBooks" :default LibraryBooks]
+   ["@material-ui/icons/Menu" :default Menu]
+   ["@material-ui/icons/MergeType" :default MergeType]
+   ["@material-ui/icons/Replay" :default Replay]
+   ["@material-ui/icons/Search" :default Search]
+   ["@material-ui/icons/Settings" :default Settings]
+   ["@material-ui/icons/Today" :default Today]
+   ["@material-ui/icons/ToggleOff" :default ToggleOff]
+   ["@material-ui/icons/ToggleOn" :default ToggleOn]
+   ["@material-ui/icons/VerticalSplit" :default VerticalSplit]
+   [athens.router :as router]
+   [athens.style :refer [color]]
+   [athens.subs]
+   [athens.util :as util]
+   [athens.views.buttons :refer [button]]
+   [athens.views.filesystem :as filesystem]
+   [athens.views.presence :as presence]
+   [athens.ws-client :as ws]
+   [re-frame.core :refer [subscribe dispatch reg-sub]]
+   [reagent.core :as r]
+   [stylefy.core :as stylefy :refer [use-style]]))
 
 
 ;;; Styles
@@ -83,6 +84,14 @@
                     {:opacity "1"}])
 
 
+;; subscriptions
+
+(reg-sub
+ :show-help?
+ (fn [db _]
+   (:show-help? db)))
+
+
 ;;; Components
 
 
@@ -96,6 +105,7 @@
   (let [left-open?        (subscribe [:left-sidebar/open])
         right-open?       (subscribe [:right-sidebar/open])
         route-name        (subscribe [:current-route/name])
+        show-help?        (subscribe [:show-help?])
         electron?         (util/electron?)
         theme-dark        (subscribe [:theme/dark])
         remote-graph-conf (subscribe [:db/remote-graph-conf])
@@ -182,6 +192,13 @@
             [button {:on-click #(dispatch [:modal/toggle])
                      :title "Choose Database"}
              [:> LibraryBooks]]
+            [separator]
+            ;; obnoxious line separator
+            [button {:on-click #(dispatch [:toggle-help])
+                     :active @show-help?
+                     :title (if @show-help? "Hide Help" "Show Help")}
+             [:> HelpOutline]]
+            ;; obnoxious line separator
             [separator]]
            [button {:style {:min-width "max-content"} :on-click #(dispatch [:get-db/init]) :primary true} "Load Test DB"])
          [button {:on-click #(dispatch [:theme/toggle])

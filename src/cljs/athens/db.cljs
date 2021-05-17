@@ -52,6 +52,7 @@
                :daily-notes/items   []
                :selected/items      []
                :theme/dark          false
+               :show-help?          true
                :graph-conf          default-graph-conf})
 
 
