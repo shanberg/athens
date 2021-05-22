@@ -1,17 +1,17 @@
 (ns athens.devcards.style-guide
   (:require
-    [athens.db]
-    [athens.style :refer [color THEME-LIGHT THEME-DARK OPACITIES]]
-    [cljsjs.react]
-    [cljsjs.react.dom]
-    [devcards.core :refer-macros [defcard-rg]]
-    [stylefy.core :as stylefy :refer [use-style]]))
+   [athens.db]
+   [athens.style :refer [color THEME-LIGHT THEME-DARK OPACITIES]]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   [cljsjs.react]
+   [cljsjs.react.dom]
+   [devcards.core :refer-macros [defcard-rg]]))
 
 
 ;;; Styles
 
 
-(def color-group-style
+(defstyled color-group :div
   {:display "grid"
    :padding "1rem"
    :grid-template-columns "repeat( auto-fit, minmax(9rem, 1fr))"
@@ -20,7 +20,7 @@
    :align-items "center"})
 
 
-(def color-item-style
+(defstyled color-item :span
   {:display "grid"
    :grid-gap "0.25rem"
    ::stylefy/manual [[:div {:border-radius "1000px"
@@ -30,7 +30,7 @@
                             :width "4rem"}]]})
 
 
-(def text-item-style
+(defstyled text-item :span
   {:display "flex"
    :justify-content "space-between"})
 
@@ -51,39 +51,41 @@
 
 
 (defcard-rg Light-Theme
-  [:div (use-style (merge color-group-style {:background (color :body-text-color :opacity-low)}))
+  [color-group
+   {:style {:background (color :body-text-color :opacity-low)}}
    (doall
-     (for [c (keys THEME-LIGHT)]
-       ^{:key c}
-       [:div (use-style color-item-style)
-        [:div {:style {:background (color c) :box-shadow "0 0 0 1px rgba(0,0,0,0.15)"}}]
-        [:span c]
-        [:span {:style {:color (color c)}} (color c)]]))]
+    (for [c (keys THEME-LIGHT)]
+      ^{:key c}
+      [color-item
+       [:div {:style {:background (color c) :box-shadow "0 0 0 1px rgba(0,0,0,0.15)"}}]
+       [:span c]
+       [:span {:style {:color (color c)}} (color c)]]))]
   {}
   {:padding false})
 
 
 (defcard-rg Dark-Theme
-  [:div (use-style (merge color-group-style {:background (color :body-text-color :opacity-low)}))
+  [color-group
+   {:style {:background (color :body-text-color :opacity-low)}}
    (doall
-     (for [c (keys THEME-DARK)]
-       ^{:key c}
-       [:div (use-style color-item-style)
-        [:div {:style {:background (color c) :box-shadow "0 0 0 1px rgba(0,0,0,0.15)"}}]
-        [:span c]
-        [:span {:style {:color (color c)}} (color c)]]))]
+    (for [c (keys THEME-DARK)]
+      ^{:key c}
+      [color-item
+       [:div {:style {:background (color c) :box-shadow "0 0 0 1px rgba(0,0,0,0.15)"}}]
+       [:span c]
+       [:span {:style {:color (color c)}} (color c)]]))]
   {}
   {:padding false})
 
 
 (defcard-rg Opacities
-  [:div (use-style color-group-style)
+  [color-group
    (doall
-     (for [o (keys OPACITIES)]
-       ^{:key o}
-       [:div (use-style color-item-style)
-        [:div {:style {:opacity (o OPACITIES)}}]
-        [:span o]]))])
+    (for [o (keys OPACITIES)]
+      ^{:key o}
+      [color-item
+       [:div {:style {:opacity (o OPACITIES)}}]
+       [:span o]]))])
 
 
 (defcard-rg Sans-Types
@@ -91,7 +93,7 @@
    (doall
      (for [t types]
        ^{:key t}
-       [:div (use-style text-item-style)
+       [text-item
         [:span t]
         [t {:style {:font-family (second fonts)}} "Welcome to Athens"]]))])
 
@@ -101,7 +103,7 @@
    (doall
      (for [t types]
        ^{:key t}
-       [:div (use-style text-item-style)
+       [text-item
         [:span t]
         [t {:style {:font-family (first fonts)}} "Welcome to Athens"]]))])
 
@@ -111,6 +113,6 @@
    (doall
      (for [t types]
        ^{:key t}
-       [:div (use-style text-item-style)
+       [text-item
         [:span t]
         [t {:style {:font-family (last fonts)}} "Welcome to Athens"]]))])

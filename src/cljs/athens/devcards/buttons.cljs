@@ -4,11 +4,19 @@
     ["@material-ui/icons/Face" :default Face]
     [athens.views.buttons :refer [button]]
     [devcards.core :refer-macros [defcard-rg]]
-    [stylefy.core :as stylefy :refer [use-style]]))
+    [cljs-styled-components.reagent :refer [defstyled]]
+))
+
+
+(defstyled demo-container :div
+  {:display "grid"
+  :grid-auto-flow "column"
+  :justify-content "flex-start"
+  :grid-gap "0.5rem"})
 
 
 (defcard-rg Default-button
-  [:div (use-style {:display "grid" :grid-auto-flow "column" :justify-content "flex-start" :grid-gap "0.5rem"})
+  [demo-container
    [button "Button"]
    [button [:> Face]]
    [button [:<>
@@ -28,7 +36,7 @@
 
 
 (defcard-rg Primary-Button
-  [:div (use-style {:display "grid" :grid-auto-flow "column" :justify-content "flex-start" :grid-gap "0.5rem"})
+  [demo-container
    [button {:className "is-primary"} "Button"]
    [button {:className "is-primary"} [:> Face]]
    [button {:className "is-primary"} [:<>

@@ -12,15 +12,15 @@
     [athens.views.pages.core :as pages]
     [athens.views.right-sidebar :as right-sidebar]
     [athens.views.spinner :refer [initial-spinner-component]]
+    [cljs-styled-components.reagent :refer [defstyled]]
     [re-frame.core :as rf]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy]))
+    [reagent.core :as r]))
 
 
 ;;; Styles
 
 
-(def app-wrapper-style
+(defstyled app-wrapper :div
   {:display "grid"
    :grid-template-areas
    "'app-header app-header app-header'
@@ -86,7 +86,7 @@
 
          :else [:<>
                 (when @modal [filesystem/window])
-                [:div (stylefy/use-style app-wrapper-style)
+                [app-wrapper
                  [app-toolbar/app-toolbar]
                  [left-sidebar/left-sidebar]
                  [pages/view]

@@ -1,9 +1,10 @@
 (ns athens.devcards.filters
   (:require
-    [athens.views.filters :refer [filters-el]]
-    [devcards.core :refer [defcard-rg]]
-    #_[re-frame.core :as re-frame :refer [dispatch]]
-    [stylefy.core :as stylefy :refer [use-style #_use-sub-style]]))
+   [athens.views.filters :refer [filters-el]]
+   [devcards.core :refer [defcard-rg]]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   #_[re-frame.core :as re-frame :refer [dispatch]]))
+
 
 
 (def items
@@ -25,9 +26,10 @@
    "Vitae"  {:count 1}})
 
 
-(def devcard-wrapper {:width "18rem"})
+(defstyled devcard-wrapper :div
+  {:width "18rem"})
 
 
 (defcard-rg Filters
-  [:div (use-style devcard-wrapper)
+  [devcard-wrapper
    [filters-el "((some-uid))" items]])
