@@ -25,15 +25,15 @@
     [athens.views.filesystem :as filesystem]
     [athens.views.presence :as presence]
     [athens.ws-client :as ws]
+    [cljs-styled-components.reagent :refer [defstyled]]
     [re-frame.core :refer [subscribe dispatch]]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy :refer [use-style]]))
+    [reagent.core :as r]))
 
 
 ;; Styles
 
 
-(def app-header-style
+(defstyled app-header :header
   {:grid-area "app-header"
    :justify-content "flex-start"
    :background-clip "padding-box"
@@ -50,26 +50,25 @@
    :z-index "1070"
    :grid-auto-flow "column"
    :padding "0 0.75rem"
-   ::stylefy/manual [[:svg {:font-size "20px"}]
-                     [:button {:justify-self "flex-start"}]]})
+   "svg" {:font-size "20px"}
+   "button" {:justify-self "flex-start"}})
 
 
-(def app-header-control-section-style
+(defstyled app-header-control-section :div
   {:display "grid"
    :grid-auto-flow "column"
    :padding "0.25rem"
    :grid-gap "0.25rem"})
 
 
-(def app-header-secondary-controls-style
-  (merge app-header-control-section-style
-         {:color (color :body-text-color :opacity-med)
-          :justify-self "flex-end"
-          :margin-left "auto"
-          ::stylefy/manual [[:button {:color "inherit"}]]}))
+(defstyled app-header-secondary-controls app-header-control-section
+  {:color (color :body-text-color :opacity-med)
+   :justify-self "flex-end"
+   :margin-left "auto"
+   "button" {:color "inherit"}})
 
 
-(def separator-style
+(defstyled separator :hr
   {:border "0"
    :background (color :background-minus-2 :opacity-high)
    :margin-inline "20%"
@@ -78,28 +77,18 @@
    :block-size "auto"})
 
 
-(def sync-icon-style
+(defstyled sync-icon-style :div
   {:background (color :background-minus-2)
    :border-radius "100%"
    :padding 0
    :margin 0
+   :margin-left "-10px"
+   :align-self "flex-end"
    :height "12px !important"
    :width "12px !important"})
 
 
-(stylefy/keyframes "fade-in"
-                   [:from
-                    {:opacity "0"}]
-                   [:to
-                    {:opacity "1"}])
-
-
 ;; Components
-
-
-(defn separator
-  []
-  [:hr (use-style separator-style)])
 
 
 (defn app-toolbar
@@ -116,8 +105,8 @@
       [:<>
        (when @merge-open?
          [filesystem/merge-modal merge-open?])
-       [:header (use-style app-header-style)
-        [:div (use-style app-header-control-section-style)
+       [app-header
+        [app-header-control-section
          [button {:aria-pressed @left-open?
                   :title "Toggle Navigation Sidebar"
                   :onClick #(dispatch [:left-sidebar/toggle])}
@@ -146,7 +135,7 @@
                   :aria-pressed @(subscribe [:athena/open])}
           [:<> [:> Search] [:span "Find or Create a Page"]]]]
 
-        [:div (use-style app-header-secondary-controls-style)
+        [app-header-secondary-controls
          (if electron?
            [:<>
             [presence/presence-popover-info]
@@ -170,22 +159,21 @@
                      :title "Choose Database"}
              [:div {:style {:display "flex"}}
               [:> Storage {:style {:align-self "center"}}]
-              [:div {:style {:margin-left "-10px"
-                             :align-self "flex-end"}}
+              [sync-icon-style
                (cond
                  (= @socket-status :closed)
-                 [:> Error (merge (use-style sync-icon-style)
-                                  {:style {:color (color :error-color)}
-                                   :title "Disconnected"})]
+                 [:> Error
+                  {:style {:color (color :error-color)}
+                   :title "Disconnected"}]
                  (or (and (:default? @remote-graph-conf)
                           (= @socket-status :running))
                      @(subscribe [:db/synced]))
-                 [:> CheckCircle (merge (use-style sync-icon-style)
-                                        {:style {:color (color :confirmation-color)}
-                                         :title "Synced"})]
-                 :else [:> Sync (merge (use-style sync-icon-style)
-                                       {:style {:color (color :highlight-color)}
-                                        :title "Synchronizing..."})])]]]
+                 [:> CheckCircle
+                  {:style {:color (color :confirmation-color)}
+                   :title "Synced"}]
+                 :else [:> Sync
+                        {:style {:color (color :highlight-color)}
+                         :title "Synchronizing..."}])]]]
 
             [separator]]
            [button {:style {:min-width "max-content"}
