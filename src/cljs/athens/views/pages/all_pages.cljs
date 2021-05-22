@@ -6,78 +6,76 @@
     [athens.router :refer [navigate-uid]]
     [athens.style :as style :refer [color OPACITIES]]
     [athens.util :refer [date-string]]
+   [cljs-styled-components.reagent :refer [defstyled]]
     [cljsjs.react]
     [cljsjs.react.dom]
     [clojure.string :refer [lower-case]]
     [datascript.core :as d]
     [garden.selectors :as selectors]
     [posh.reagent :as p]
-    [re-frame.core :as rf :refer [dispatch subscribe]]
-    [stylefy.core :as stylefy :refer [use-style]]))
+    [re-frame.core :as rf :refer [dispatch subscribe]]))
 
 
 ;;; Styles
 
 
-(def page-style
+(defstyled page-content :div
   {:display "flex"
    :margin "5rem auto"
    :flex-basis "100%"
    :max-width "70rem"})
 
 
-(def table-style
-  {:flex "1 1 100%"
-   :margin "0 2rem"
-   :text-align "left"
-   :border-collapse "collapse"
-   ::stylefy/manual [[:tbody {:vertical-align "top"}
-                      [:tr {:transition "background 0.1s ease"}
-                       [:td {:border-top (str "1px solid " (color :border-color))
-                             :transition "box-shadow 0.1s ease"}
-                        [:&.title {:color (color :link-color)
-                                   :width "15vw"
-                                   :cursor "pointer"
-                                   :min-width "10em"
-                                   :word-break "break-word"
-                                   :font-weight "500"
-                                   :font-size "1.3125em"
-                                   :line-height "1.28"}]
-                        [:&.links {:font-size "1em"
-                                   :text-align "center"}]
-                        [:&.body-preview {:word-break "break-word"
-                                          :overflow "hidden"
-                                          :text-overflow "ellipsis"
-                                          :display "-webkit-box"
-                                          :-webkit-mask "linear-gradient(to bottom, #fff calc(100% - 1em), transparent)"
-                                          :-webkit-line-clamp "3"
-                                          :-webkit-box-orient "vertical"}
-                         [:span:empty {:display "none"}]
-                         [(selectors/+ :span :span)
-                          [:&:before {:content "'•'"
-                                      :margin-inline "0.5em"
-                                      :opacity (:opacity-low OPACITIES)}]]]
-                        [:&.date {:text-align "right"
-                                  :opacity (:opacity-high OPACITIES)
-                                  :font-size "0.75em"
-                                  :min-width "9em"}]
-                        [:&:first-child {:border-radius "0.5rem 0 0 0.5rem"
-                                         :box-shadow "-1rem 0 transparent"}]
-                        [:&:last-child {:border-radius "0 0.5rem 0.5rem 0"
-                                        :box-shadow "1rem 0 transparent"}]]
-                       [:&:hover {:background-color (color :background-minus-1 :opacity-med)
-                                  :border-radius "0.5rem"}
-                        [:td [:&:first-child {:box-shadow [["-1rem 0 " (color :background-minus-1 :opacity-med)]]}]]
-                        [:td [:&:last-child {:box-shadow [["1rem 0 " (color :background-minus-1 :opacity-med)]]}]]]]]
-                     [:td :th {:padding "0.5rem"}]
-                     [:th {:opacity (:opacity-med OPACITIES)
-                           :user-select "none"}
-                      [:&.sortable {:cursor "pointer"}
-                       [:.wrap-label {:display "flex"
-                                      :align-items "center"}]
-                       [:&.date
-                        [:.wrap-label {:flex-direction "row-reverse"}]]
-                       [:&:hover {:opacity 1}]]]]})
+(defstyled all-pages-table
+  :table {:flex "1 1 100%"
+          :margin "0 2rem"
+          :text-align "left"
+          :border-collapse "collapse"
+          "tbody" {:vertical-align "top"}
+          "tr" {:transition "background 0.1s ease"
+                "td" {:border-top (str "1px solid " (color :border-color))
+                      :transition "box-shadow 0.1s ease"
+                      "&.title" {:color (color :link-color)
+                                 :width "15vw"
+                                 :cursor "pointer"
+                                 :min-width "10em"
+                                 :word-break "break-word"
+                                 :font-weight "500"
+                                 :font-size "1.3125em"
+                                 :line-height "1.28"}
+                      "&.links" {:font-size "1em"
+                                 :text-align "center"}
+                      "&.body-preview" {:word-break "break-word"
+                                        :overflow "hidden"
+                                        :text-overflow "ellipsis"
+                                        :display "-webkit-box"
+                                        :-webkit-mask "linear-gradient(to bottom, #fff calc(100% - 1em), transparent)"
+                                        :-webkit-line-clamp "3"
+                                        :-webkit-box-orient "vertical"}
+                      "span:empty" {:display "none"}
+                      "span + span:before" {:content "'•'"
+                                            :margin-inline "0.5em"
+                                            :opacity (:opacity-low OPACITIES)}
+                      "&.date" {:text-align "right"
+                                :opacity (:opacity-high OPACITIES)
+                                :font-size "0.75em"
+                                :min-width "9em"}
+                      "&:first-child" {:border-radius "0.5rem 0 0 0.5rem"
+                                       :box-shadow "-1rem 0 transparent"}
+                      "&:last-child" {:border-radius "0 0.5rem 0.5rem 0"
+                                      :box-shadow "1rem 0 transparent"}}}
+          "tbody tr:hover" {:background-color (color :background-minus-1 :opacity-med)
+                            :border-radius "0.5rem"
+                            "td:first-child" {:box-shadow [["-1rem 0 " (color :background-minus-1 :opacity-med)]]}
+                            "td:last-child"  {:box-shadow [[" 1rem 0 " (color :background-minus-1 :opacity-med)]]}}
+          "td, th" {:padding "0.5rem"}
+          "th" {:opacity (:opacity-med OPACITIES)
+                :user-select "none"
+                "&.sortable" {:cursor "pointer"}
+                ".wrap-label" {:display "flex"
+                               :align-items "center"}}
+          "&.date .wrap-label" {:flex-direction "row-reverse"
+                                "&:hover" {:opacity 1}}})
 
 ;;; Sort state and logic
 
@@ -158,8 +156,8 @@
                    (p/pull-many db/dsdb '["*" :block/_refs {:block/children [:block/string] :limit 5}]))]
     (fn []
       (let [sorted-pages @(subscribe [:all-pages/sorted @pages])]
-        [:div (use-style page-style)
-         [:table (use-style table-style)
+        [page-content
+         [all-pages-table
           [:thead
            [:tr
             [sortable-header :title "Title"]

@@ -78,14 +78,15 @@
 
 
 (defstyled sync-icon-style :div
-  {:background (color :background-minus-2)
-   :border-radius "100%"
-   :padding 0
+  {:padding 0
    :margin 0
    :margin-left "-10px"
    :align-self "flex-end"
-   :height "12px !important"
-   :width "12px !important"})
+   "svg"
+   {:height "12px !important"
+    :width "12px !important"
+    :background (color :background-minus-2)
+    :border-radius "100%"}})
 
 
 ;; Components

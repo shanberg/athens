@@ -6,13 +6,13 @@
     [athens.views.pages.graph :as graph]
     [athens.views.pages.page :as page]
     [athens.views.pages.settings :as settings]
-    [re-frame.core :as rf]
-    [stylefy.core :as stylefy]))
+    [cljs-styled-components.reagent :refer [defstyled]]
+    [re-frame.core :as rf]))
 
 
 ;; Styles
 
-(def main-content-style
+(defstyled main-content :div
   {:flex "1 1 100%"
    :grid-area "main-content"
    :align-items "flex-start"
@@ -20,12 +20,12 @@
    :padding-top "2.5rem"
    :display "flex"
    :overflow-y "auto"
-   ::stylefy/mode {"::-webkit-scrollbar" {:background (style/color :background-minus-1)
-                                          :width "0.5rem"
-                                          :height "0.5rem"}
-                   "::-webkit-scrollbar-corner" {:background (style/color :background-minus-1)}
-                   "::-webkit-scrollbar-thumb" {:background (style/color :background-minus-2)
-                                                :border-radius "0.5rem"}}})
+   "::-webkit-scrollbar" {:background (style/color :background-minus-1)
+                        :width "0.5rem"
+                        :height "0.5rem"}
+   "::-webkit-scrollbar-corner" {:background (style/color :background-minus-1)}
+   "::-webkit-scrollbar-thumb" {:background (style/color :background-minus-2)
+                                :border-radius "0.5rem"}})
 
 
 ;; Helpers
@@ -49,7 +49,6 @@
 (defn view
   []
   (let [route-name (rf/subscribe [:current-route/name])]
-    [:div (stylefy/use-style main-content-style
-                             {:on-scroll (when (= @route-name :home)
-                                           #(daily-notes/db-scroll-daily-notes %))})
+    [main-content {:onScroll (when (= @route-name :home)
+                               #(daily-notes/db-scroll-daily-notes %))}
      [match-page @route-name]]))
