@@ -1,20 +1,19 @@
 (ns athens.views.alerts
   (:require
-    ["@material-ui/icons/Announcement" :default Announcement]
-    ["@material-ui/icons/Check" :default Check]
-    ["@material-ui/icons/Close" :default Close]
-    [athens.style :refer [color]]
-    [athens.views.buttons :refer [button]]
-    [cljsjs.react]
-    [cljsjs.react.dom]
-    ;;[garden.selectors :as selectors]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy :refer [use-style]]))
+   ["@material-ui/icons/Announcement" :default Announcement]
+   ["@material-ui/icons/Check" :default Check]
+   ["@material-ui/icons/Close" :default Close]
+   [athens.style :refer [color]]
+   [athens.views.buttons :refer [button]]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   [cljsjs.react]
+   [cljsjs.react.dom]
+   [reagent.core :as r]))
 
 
 ;;; Styles
 
-(def alert-container-style
+(defstyled alert-container :div
   {:background-color (color :highlight-color :opacity-low)
    :display          "flex"
    :align-items      "center"
@@ -32,11 +31,11 @@
 (defn alert-component
   "A pop-up, only used for merging pages right now. Can abstract to generic alerts and messages as needed."
   [message confirm-fn close-fn]
-  [:div (use-style alert-container-style)
+  [alert-container
    [button {:style {:color (color :highlight-color)}}
-    [(r/adapt-react-class Announcement)]]
+    [:> Announcement]]
    [:span message]
    [button {:onClick confirm-fn :style {:color (color :header-text-color)}}
-    [(r/adapt-react-class Check)]]
+    [:> Check]]
    [button {:onClick close-fn :style {:color (color :header-text-color)}}
-    [(r/adapt-react-class Close)]]])
+    [:> Close]]])
