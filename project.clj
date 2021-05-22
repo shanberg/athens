@@ -29,6 +29,7 @@
                  [borkdude/sci "0.0.13-alpha.22"]
                  [garden "1.3.10"]
                  [stylefy "2.2.0"]
+                 [cljs-styled-components "0.1.11"]
                  [tick "0.4.26-alpha"]
                  [com.rpl/specter "1.1.3"]
                  [com.taoensso/sente "1.16.2"]
