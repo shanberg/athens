@@ -14,6 +14,8 @@
     [athens.views.blocks.tooltip :as tooltip]
     [athens.views.buttons :as buttons]
     [athens.views.presence :as presence]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   [cljsjs.react]
     [cljsjs.react]
     [cljsjs.react.dom]
     [com.rpl.specter :as s]
@@ -28,8 +30,7 @@
 ;;; blocks need to scale with their container: sidebar blocks are
 ;;; smaller than main content blocks, for instance.
 
-
-(def block-container-style
+(defstyled block-container :div
   {:display "flex"
    :line-height "2em"
    :position "relative"
