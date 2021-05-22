@@ -142,7 +142,7 @@
          #_[button {:onClick #(throw (js/Error "error"))
                     :style {:border "1px solid red"}} [:> Warning]]
          [button {:onClick #(dispatch [:athena/toggle])
-                  :style    {:width "14rem" :margin-left "1rem" :background (color :background-minus-1)}
+                  :style    {:width "14rem" :marginLeft "1rem" :background (color :background-minus-1)}
                   :aria-pressed @(subscribe [:athena/open])}
           [:<> [:> Search] [:span "Find or Create a Page"]]]]
 

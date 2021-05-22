@@ -1,47 +1,47 @@
 ^:cljstyle/ignore
 (ns athens.parse-renderer
   (:require
-    ["katex" :as katex]
-    ["katex/dist/contrib/mhchem"]
-    #_["codemirror/addon/edit/closebrackets"]
-    #_["codemirror/addon/edit/matchbrackets"]
-    #_["codemirror/mode/clike/clike"]
-    #_["codemirror/mode/clojure/clojure"]
-    #_["codemirror/mode/coffeescript/coffeescript"]
-    #_["codemirror/mode/commonlisp/commonlisp"]
-    #_["codemirror/mode/css/css"]
-    #_["codemirror/mode/dart/dart"]
-    #_["codemirror/mode/dockerfile/dockerfile"]
-    #_["codemirror/mode/elm/elm"]
-    #_["codemirror/mode/erlang/erlang"]
-    #_["codemirror/mode/go/go"]
-    #_["codemirror/mode/haskell/haskell"]
-    #_["codemirror/mode/javascript/javascript"]
-    #_["codemirror/mode/lua/lua"]
-    #_["codemirror/mode/mathematica/mathematica"]
-    #_["codemirror/mode/perl/perl"]
-    #_["codemirror/mode/php/php"]
-    #_["codemirror/mode/powershell/powershell"]
-    #_["codemirror/mode/python/python"]
-    #_["codemirror/mode/ruby/ruby"]
-    #_["codemirror/mode/rust/rust"]
-    #_["codemirror/mode/scheme/scheme"]
-    #_["codemirror/mode/shell/shell"]
-    #_["codemirror/mode/smalltalk/smalltalk"]
-    #_["codemirror/mode/sql/sql"]
-    #_["codemirror/mode/swift/swift"]
-    #_["codemirror/mode/vue/vue"]
-    #_["codemirror/mode/xml/xml"]
-    #_["react-codemirror2" :rename {UnControlled CodeMirror}]
-    [athens.config :as config]
-    [athens.db :as db]
-    [athens.parser.impl :as parser-impl]
-    [athens.router :refer [navigate-uid]]
-    [athens.style :refer [color OPACITIES]]
-    [clojure.string :as str]
-    [instaparse.core :as insta]
-    [posh.reagent :refer [pull #_q]]
-    [stylefy.core :as stylefy :refer [use-style]]))
+   ["katex" :as katex]
+   ["katex/dist/contrib/mhchem"]
+   #_["codemirror/addon/edit/closebrackets"]
+   #_["codemirror/addon/edit/matchbrackets"]
+   #_["codemirror/mode/clike/clike"]
+   #_["codemirror/mode/clojure/clojure"]
+   #_["codemirror/mode/coffeescript/coffeescript"]
+   #_["codemirror/mode/commonlisp/commonlisp"]
+   #_["codemirror/mode/css/css"]
+   #_["codemirror/mode/dart/dart"]
+   #_["codemirror/mode/dockerfile/dockerfile"]
+   #_["codemirror/mode/elm/elm"]
+   #_["codemirror/mode/erlang/erlang"]
+   #_["codemirror/mode/go/go"]
+   #_["codemirror/mode/haskell/haskell"]
+   #_["codemirror/mode/javascript/javascript"]
+   #_["codemirror/mode/lua/lua"]
+   #_["codemirror/mode/mathematica/mathematica"]
+   #_["codemirror/mode/perl/perl"]
+   #_["codemirror/mode/php/php"]
+   #_["codemirror/mode/powershell/powershell"]
+   #_["codemirror/mode/python/python"]
+   #_["codemirror/mode/ruby/ruby"]
+   #_["codemirror/mode/rust/rust"]
+   #_["codemirror/mode/scheme/scheme"]
+   #_["codemirror/mode/shell/shell"]
+   #_["codemirror/mode/smalltalk/smalltalk"]
+   #_["codemirror/mode/sql/sql"]
+   #_["codemirror/mode/swift/swift"]
+   #_["codemirror/mode/vue/vue"]
+   #_["codemirror/mode/xml/xml"]
+   #_["react-codemirror2" :rename {UnControlled CodeMirror}]
+   [athens.config :as config]
+   [athens.db :as db]
+   [athens.parser.impl :as parser-impl]
+   [athens.router :refer [navigate-uid]]
+   [athens.style :refer [color OPACITIES]]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   [clojure.string :as str]
+   [instaparse.core :as insta]
+   [posh.reagent :refer [pull #_q]]))
 
 
 (declare parse-and-render)
@@ -49,50 +49,54 @@
 
 ;;; Styles
 
-(def page-link
+(def formatting-style
+  {:color (color :body-text-color)
+   :opacity (:opacity-low OPACITIES)})
+
+(defstyled page-link :span
   {:cursor "pointer"
    :text-decoration "none"
    :color (color :link-color)
    :display "inline"
    :border-radius "0.25rem"
-   ::stylefy/manual [[:.formatting {:color (color :body-text-color)
-                                    :opacity (:opacity-low OPACITIES)}]
-                     [:&:hover {:z-index 1
-                                :background (color :link-color :opacity-lower)
-                                :box-shadow (str "0px 0px 0px 1px " (color :link-color :opacity-lower))}]]})
+   ".formatting" formatting-style
+   "&:hover" {:z-index 1
+              :background (color :link-color :opacity-lower)
+              :box-shadow (str "0 0 0 1px " (color :link-color :opacity-lower))}})
 
 
-(def hashtag
-  {::stylefy/mode [[:hover {:text-decoration "underline" :cursor "pointer"}]]
-   ::stylefy/manual [[:.formatting {:opacity (:opacity-low OPACITIES)}]]})
+(defstyled hashtag :span
+  {"&:hover *:not(.formatting)" {:text-decoration "underline" :cursor "pointer"}
+   ".formatting" formatting-style})
 
 
-(def image {:border-radius "0.125rem"})
+(defstyled image :img
+  {:border-radius "0.125rem"})
 
 
-(def url-link
+(defstyled url-link :a
   {:cursor "pointer"
    :text-decoration "none"
    :color (color :link-color)
-   ::stylefy/manual [[:.formatting {:color (color :body-text-color :opacity-low)}]
-                     [:&:hover {:text-decoration "underline"}]]})
+   ".formatting" {:color (color :body-text-color :opacity-low)}
+   "&:hover" {:text-decoration "underline"}})
 
 
-(def autolink
+(defstyled autolink :span
   {:cursor "pointer"
    :text-decoration "none"
-   ::stylefy/manual [[:.formatting {:color (color :body-text-color :opacity-low)}]
-                     [:.contents {:color (color :link-color)
-                                  :text-decoration "none"}]
-                     [:&:hover [:.contents {:text-decoration "underline"}]]]})
+   ".formatting" formatting-style
+   ".contents" {:color (color :link-color)
+                :text-decoration "none"}
+   "&:hover .contents" {:text-decoration "underline"}})
 
 
-(def block-ref
+(defstyled block-ref :span
   {:font-size "0.9em"
    :transition "background 0.05s ease"
-   :border-bottom [["1px" "solid" (color :highlight-color)]]
-   ::stylefy/mode [[:hover {:background-color (color :highlight-color :opacity-lower)
-                            :cursor "alias"}]]})
+   :border-bottom (str "1px solid " (color :highlight-color))
+   "&:hover" {:background-color (color :highlight-color :opacity-lower)
+              :cursor "alias"}})
 
 
 (defn parse-title
@@ -118,13 +122,13 @@
   "Renders a page link given the title of the page."
   [title]
   (let [node (pull-node-from-string title)]
-    [:span (use-style page-link {:class "page-link"})
-     [:span {:class "formatting"} "[["]
+    [page-link
+     [:span.formatting "[["]
      (into [:span {:on-click (fn [e]
                                (.. e stopPropagation) ;; prevent bubbling up click handler for nested links
                                (navigate-uid (:block/uid @node) e))}]
            title)
-     [:span {:class "formatting"} "]]"]]))
+     [:span.formatting "]]"]]))
 
 ;; -- Component ---
 
@@ -187,43 +191,41 @@
      :page-link            (fn [& title-coll] (render-page-link title-coll))
      :hashtag              (fn [& title-coll]
                              (let [node (pull-node-from-string title-coll)]
-                               [:span (use-style hashtag {:class    "hashtag"
-                                                          :on-click #(navigate-uid (:block/uid @node) %)})
-                                [:span {:class "formatting"} "#"]
-                                [:span {:class "contents"} title-coll]]))
+                               [hashtag
+                                {:onClick #(navigate-uid (:block/uid @node) %)}
+                                [:span.formatting "#"]
+                                [:span.contents title-coll]]))
      :block-ref            (fn [ref-uid]
                              (let [block (pull db/dsdb '[*] [:block/uid ref-uid])]
                                (if @block
-                                 [:span (use-style block-ref {:class "block-ref"})
-                                  [:span {:class "contents" :on-click #(navigate-uid ref-uid %)}
+                                 [block-ref
+                                  [:span.contents {:on-click #(navigate-uid ref-uid %)}
                                    (if (= uid ref-uid)
                                      [parse-and-render "{{SELF}}"]
                                      [parse-and-render (:block/string @block) ref-uid])]]
                                  (str "((" ref-uid "))"))))
      :url-image            (fn [{url :src alt :alt}]
-                             [:img (use-style image {:class "url-image"
-                                                     :alt   alt
-                                                     :src   url})])
+                             [image {:className "url-image"
+                                     :alt   alt
+                                     :src   url}])
      :url-link             (fn [{url :url} text]
-                             [:a (use-style url-link {:class  "url-link"
-                                                      :href   url
-                                                      :target "_blank"})
+                             [url-link {:href   url
+                                        :target "_blank"}
                               text])
      :link                 (fn [{:keys [text target title]}]
-                             [:a (cond-> (use-style url-link {:class  "url-link contents"
-                                                              :href target
-                                                              :target "_blank"})
-                                   (string? title)
-                                   (assoc :title title))
+                             [url-link {:className "url-link contents"
+                                        :href target
+                                        :title (when (string? title) title)
+                                        :target "_blank"}
                               text])
      :autolink             (fn [{:keys [text target]}]
-                             [:span (use-style autolink)
-                              [:span {:class "formatting"} "<"]
-                              [:a {:class  "autolink contents"
+                             [autolink
+                              [:span.formatting "<"]
+                              [:a {:class "contents"
                                    :href target
                                    :target "_blank"}
                                text]
-                              [:span {:class "formatting"} ">"]])
+                              [:span.formatting ">"]])
      :paragraph            (fn [& contents]
                              (apply conj [:p] contents))
      :bold                 (fn [& contents]
@@ -255,44 +257,44 @@
                                 [:code text]]
                                ;; TODO: Followup issue: #989 "Integrate with CodeMirror for code blocks"
                                #_[:> CodeMirror {:value     text
-                                                :options   {:mode              mode
-                                                            :lineNumbers       true
-                                                            :matchBrackets     true
-                                                            :autoCloseBrackets true
-                                                            :extraKeys         #js {"Esc" (fn [editor]
+                                                 :options   {:mode              mode
+                                                             :lineNumbers       true
+                                                             :matchBrackets     true
+                                                             :autoCloseBrackets true
+                                                             :extraKeys         #js {"Esc" (fn [editor]
                                                                                           ;; TODO: save when needed
-                                                                                            (js/console.log "[Esc]")
-                                                                                            (if (= text @local-value)
-                                                                                              (js/console.log "[Esc] no changes")
-                                                                                              (do
+                                                                                             (js/console.log "[Esc]")
+                                                                                             (if (= text @local-value)
+                                                                                               (js/console.log "[Esc] no changes")
+                                                                                               (do
                                                                                               ;; TODO Save
-                                                                                                )))}}
-                                                :on-change (fn [editor data value]
-                                                             (js/console.log "on-change" editor (pr-str data) (pr-str value))
-                                                             (when-not (= @local-value value)
-                                                               (js/console.log "on-change, updating local state" value)
-                                                               (reset! local-value value)))
-                                                :on-blur   (fn [editor event]
-                                                             (js/console.log "on-blur")
-                                                             (if (= text @local-value)
-                                                               (js/console.log "on-blur, content not modified")
-                                                               (do
-                                                                 (js/console.log "on-blur, content modified"
-                                                                                 (pr-str text)
-                                                                                 "=>"
-                                                                                 (pr-str @local-value))
+                                                                                                 )))}}
+                                                 :on-change (fn [editor data value]
+                                                              (js/console.log "on-change" editor (pr-str data) (pr-str value))
+                                                              (when-not (= @local-value value)
+                                                                (js/console.log "on-change, updating local state" value)
+                                                                (reset! local-value value)))
+                                                 :on-blur   (fn [editor event]
+                                                              (js/console.log "on-blur")
+                                                              (if (= text @local-value)
+                                                                (js/console.log "on-blur, content not modified")
+                                                                (do
+                                                                  (js/console.log "on-blur, content modified"
+                                                                                  (pr-str text)
+                                                                                  "=>"
+                                                                                  (pr-str @local-value))
                                                                ;; update value based on `uid`
-                                                                 )))}]))
+                                                                  )))}]))
 
-    :latex (fn [text]
-             [:span {:ref (fn [el]
-                            (when el
-                              (try
-                                (katex/render text el (clj->js
-                                                       {:throwOnError false}))
-                                (catch :default e
-                                  (js/console.warn "Unexpected KaTeX error" e)
-                                  (aset el "innerHTML" text)))))}])
+     :latex (fn [text]
+              [:span {:ref (fn [el]
+                             (when el
+                               (try
+                                 (katex/render text el (clj->js
+                                                        {:throwOnError false}))
+                                 (catch :default e
+                                   (js/console.warn "Unexpected KaTeX error" e)
+                                   (aset el "innerHTML" text)))))}])
      :newline (fn [_]
                 [:br])}
    tree))

@@ -156,7 +156,7 @@
 (def page-menu-toggle-style
   {:position "absolute"
    :left "-1.5rem"
-   :border-radius "1000px"
+   :borderRadius "1000px"
    :padding "0.375rem 0.5rem"
    :color (color :body-text-color :opacity-high)
    :top "0.5rem"})
