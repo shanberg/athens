@@ -8,14 +8,11 @@
    [garden.selectors :as selectors]
    [stylefy.core :as stylefy]))
 
-
 ;;; Styles
-
 
 (def button-icons-style
   {:margin-block-start "-0.0835em"
    :margin-block-end "-0.0835em"})
-
 
 (def button-icons-not-last-child-style {:margin-inline-end "0.251em"})
 
