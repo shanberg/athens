@@ -6,10 +6,10 @@
     [athens.style :refer [color]]
     [athens.util :refer [now-ts recursively-modify-block-for-embed]]
     [athens.views.blocks.core :as blocks]
+    [cljs-styled-components.reagent :refer-macros [defstyled]]
     [clojure.string :as str]
     [re-frame.core :refer [dispatch subscribe]]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy :refer [use-style]]))
+    [reagent.core :as r]))
 
 
 (defn todo-on-click
@@ -72,17 +72,18 @@
     content]])
 
 
-(def block-embed-adjustments
+(defstyled block-embed :div
   {:background (color :background-minus-2 :opacity-med)
    :position   "relative"
-   ::stylefy/manual [[:>.block-container {:margin-left "0"
-                                          ::stylefy/manual [[:textarea {:background "transparent"}]]}]
-                     [:>svg              {:position   "absolute"
-                                          :right      "5px"
-                                          :top        "5px"
-                                          :font-size  "1rem"
-                                          :z-index    "5"
-                                          :cursor     "pointer"}]]})
+   :border-radius "0.5rem"
+   "> .block-container" {:margin-left "0"
+                         "textarea" {:background "transparent"}}
+   "> svg"              {:position   "absolute"
+                         :right      "5px"
+                         :top        "5px"
+                         :font-size  "1rem"
+                         :z-index    "5"
+                         :cursor     "pointer"}})
 
 
 (defmethod component :block-embed
@@ -94,18 +95,18 @@
     ;; todo -- not reactive. some cases where delete then ctrl-z doesn't work
     (if (db/e-by-av :block/uid block-uid)
       (r/with-let [embed-id (random-uuid)]
-                  [:div.block-embed (use-style block-embed-adjustments)
-                   (let [block (db/get-block-document [:block/uid block-uid])]
-                     [:<>
-                      [blocks/block-el
-                       (recursively-modify-block-for-embed block embed-id)
-                       {:linked-ref false}
-                       {:block-embed? true}]
-                      (when-not @(subscribe [:editing/is-editing uid])
-                        [:> Edit
-                         {:on-click (fn [e]
-                                      (.. e stopPropagation)
-                                      (dispatch [:editing/uid uid]))}])])])
+        [block-embed
+         (let [block (db/get-block-document [:block/uid block-uid])]
+           [:<>
+            [blocks/block-el
+             (recursively-modify-block-for-embed block embed-id)
+             {:linked-ref false}
+             {:block-embed? true}]
+            (when-not @(subscribe [:editing/is-editing uid])
+              [:> Edit
+               {:on-click (fn [e]
+                            (.. e stopPropagation)
+                            (dispatch [:editing/uid uid]))}])])])
       ;; roam actually hides the brackets around [[embed]]
       [:span "{{" content "}}"])))
 
