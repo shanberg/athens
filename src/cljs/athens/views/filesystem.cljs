@@ -133,7 +133,7 @@
         {:title    [:div.modal__title
                     [:> MergeType]
                     [:h4 "Merge Roam DB"]
-                    [button {:on-click close-modal}
+                    [button {:onClick close-modal}
                      [:> Close]]]
 
          :content  [:div (use-style (merge modal-contents-style))
@@ -166,11 +166,11 @@
                           (for [x shared-pages]
                             ^{:key x}
                             [:li (str "[[" x "]]")])]
-                         [button {:style    {:align-self "center"}
-                                  :primary  true
-                                  :on-click (fn []
-                                              (dispatch [:upload/roam-edn @transformed-roam-db @roam-db-filename])
-                                              (close-modal))}
+                         [button {:style     {:align-self "center"}
+                                  :className "is-primary"
+                                  :onClick   (fn []
+                                               (dispatch [:upload/roam-edn @transformed-roam-db @roam-db-filename])
+                                               (close-modal))}
                           "Merge"]]))]
 
          :on-close close-modal}]])))
@@ -189,12 +189,12 @@
                      :justify-content "space-between"
                      :align-items     "center"
                      :width           "80%"})
-    [button {:primary  true
-             :on-click #(electron/open-dialog!)}
+    [button {:className "is-primary"
+             :onClick #(electron/open-dialog!)}
      "Open"]
     [button {:disabled @loading
-             :primary  true
-             :on-click #(electron/move-dialog!)}
+             :className "is-primary"
+             :onClick #(electron/move-dialog!)}
      "Move"]]])
 
 
@@ -214,9 +214,9 @@
                   :justify-content "space-between"
                   :width           "100%"}}
     [:h5 "New Location"]
-    [button {:primary  true
+    [button {:className "is-primary"
              :disabled (clojure.string/blank? (:input @state))
-             :on-click #(electron/create-dialog! (:input @state))}
+             :onClick #(electron/create-dialog! (:input @state))}
      "Browse"]]])
 
 
@@ -244,10 +244,10 @@
                                        :placeholder placeholder
                                        :on-change   #(rf/dispatch [:remote-graph/set-conf key (js-event->val %)])}]]]))
         doall)
-   [button {:primary  true
+   [button {:className "is-primary"
             :style    {:margin-top "0.5rem"}
-            :on-click #(ws-client/start-socket! (assoc @remote-graph-conf
-                                                       :reload-on-init? true))}
+            :onClick #(ws-client/start-socket! (assoc @remote-graph-conf
+                                                      :reload-on-init? true))}
     "Join"]])
 
 
@@ -272,19 +272,19 @@
                                     [:> Storage]
                                     [:h4 "Database"]
                                     (when-not @loading
-                                      [button {:on-click close-modal} [:> Close]])]
+                                      [button {:onClick close-modal} [:> Close]])]
                          :content  [:div (use-style modal-contents-style)
                                     [:div (use-style picker-style)
                                      [:button {:class (when (= 0 (:tab-value @state)) "active")
-                                               :on-click (fn [] (swap! state assoc :tab-value 0))}
+                                               :onClick (fn [] (swap! state assoc :tab-value 0))}
                                       [:> Folder]
                                       [:span "Open"]]
                                      [:button {:class (when (= 1 (:tab-value @state)) "active")
-                                               :on-click (fn [] (swap! state assoc :tab-value 1))}
+                                               :onClick (fn [] (swap! state assoc :tab-value 1))}
                                       [:> AddBox]
                                       [:span "New"]]
                                      [:button {:class (when (= 2 (:tab-value @state)) "active")
-                                               :on-click (fn [] (swap! state assoc :tab-value 2))}
+                                               :onClick (fn [] (swap! state assoc :tab-value 2))}
                                       [:> Group]
                                       [:span "Join"]]]
                                     (cond

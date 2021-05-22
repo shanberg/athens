@@ -362,8 +362,8 @@
   (let [{:block/keys [uid] sidebar :page/sidebar title :node/title} node]
     (r/with-let [ele (r/atom nil)]
                 [:<>
-                 [button {:class    [(when @ele "is-active")]
-                          :on-click #(reset! ele (.-currentTarget %))
+                 [button {:aria-pressed (when @ele "is-active")
+                          :onClick #(reset! ele (.-currentTarget %))
                           :style    page-menu-toggle-style}
                   [:> MoreHoriz]]
                  [m-popover
@@ -382,25 +382,22 @@
                   [:div (use-style menu-style)
                    [:<>
                     (if sidebar
-                      [button {:on-click #(dispatch [:page/remove-shortcut uid])}
-                       [:<>
-                        [:> BookmarkBorder]
-                        [:span "Remove Shortcut"]]]
-                      [button {:on-click #(dispatch [:page/add-shortcut uid])}
-                       [:<>
-                        [:> Bookmark]
-                        [:span "Add Shortcut"]]])
-                    [button {:on-click #(dispatch [:right-sidebar/open-item uid true])}
-                     [:<>
-                      [:> BubbleChart]
-                      [:span "Show Local Graph"]]]]
+                      [button {:onClick #(dispatch [:page/remove-shortcut uid])}
+                       [:> BookmarkBorder]
+                       [:span "Remove Shortcut"]]
+                      [button {:onClick #(dispatch [:page/add-shortcut uid])}
+                       [:> Bookmark]
+                       [:span "Add Shortcut"]])
+                    [button {:onClick #(dispatch [:right-sidebar/open-item uid true])}
+                     [:> BubbleChart]
+                     [:span "Show Local Graph"]]]
                    [:hr (use-style menu-separator-style)]
-                   [button {:on-click #(do
-                                         (if daily-note?
-                                           (dispatch [:daily-note/delete uid title])
-                                           (dispatch [:page/delete uid title]))
-                                         (navigate :pages))}
-                    [:<> [:> Delete] [:span "Delete Page"]]]]]])))
+                   [button {:onClick #(do
+                                        (if daily-note?
+                                          (dispatch [:daily-note/delete uid title])
+                                          (dispatch [:page/delete uid title]))
+                                        (navigate :pages))}
+                    [:> Delete] [:span "Delete Page"]]]]])))
 
 
 (defn ref-comp
@@ -438,7 +435,7 @@
               (not daily-notes?))
       [:section (use-style references-style)
        [:h4 (use-style references-heading-style)
-        [button {:on-click (fn [] (swap! state update linked? not))}
+        [button {:onClick (fn [] (swap! state update linked? not))}
          (if (get @state linked?)
            [:> KeyboardArrowDown]
            [:> ChevronRight])]
@@ -471,7 +468,7 @@
     (when (not daily-notes?)
       [:section (use-style references-style)
        [:h4 (use-style references-heading-style)
-        [button {:on-click (fn []
+        [button {:onClick (fn []
                              (if (get @state unlinked?)
                                (swap! state assoc unlinked? false)
                                (let [un-refs (get-unlinked-references (escape-str title))]
@@ -487,7 +484,7 @@
          [:span unlinked?]
          (when (and unlinked? (not-empty @unlinked-refs))
            [button {:style    {:font-size "14px"}
-                    :on-click (fn []
+                    :onClick (fn []
                                 (dispatch [:unlinked-references/link-all @unlinked-refs title])
                                 (swap! state assoc unlinked? false)
                                 (reset! unlinked-refs []))}
@@ -511,7 +508,7 @@
                      [ref-comp block]]
                     (when unlinked?
                       [button {:style    {:margin-top "1.5em"}
-                               :on-click (fn []
+                               :onClick (fn []
                                            (let [hm                (into (hash-map) @unlinked-refs)
                                                  new-unlinked-refs (->> (update-in hm [group-title] #(filter (fn [{:keys [block/uid]}]
                                                                                                                (= uid (:block/uid block)))

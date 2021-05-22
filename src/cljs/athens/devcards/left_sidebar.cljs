@@ -8,7 +8,7 @@
 
 
 (defcard-rg Create-Shortcut
-  [button {:on-click (fn []
+  [button {:onClick (fn []
                        (let [n (:max-eid @db/dsdb)]
                          (transact! db/dsdb [{:page/sidebar n
                                               :node/title   (str "Page " n)

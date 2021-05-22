@@ -36,7 +36,7 @@
    [button {:style {:color (color :highlight-color)}}
     [(r/adapt-react-class Announcement)]]
    [:span message]
-   [button {:on-click confirm-fn :style {:color (color :header-text-color)}}
+   [button {:onClick confirm-fn :style {:color (color :header-text-color)}}
     [(r/adapt-react-class Check)]]
-   [button {:on-click close-fn :style {:color (color :header-text-color)}}
+   [button {:onClick close-fn :style {:color (color :header-text-color)}}
     [(r/adapt-react-class Close)]]])

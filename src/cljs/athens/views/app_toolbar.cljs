@@ -118,32 +118,32 @@
          [filesystem/merge-modal merge-open?])
        [:header (use-style app-header-style)
         [:div (use-style app-header-control-section-style)
-         [button {:active   @left-open?
+         [button {:aria-pressed @left-open?
                   :title "Toggle Navigation Sidebar"
-                  :on-click #(dispatch [:left-sidebar/toggle])}
+                  :onClick #(dispatch [:left-sidebar/toggle])}
           [:> Menu]]
          [separator]
          ;; TODO: refactor to effects
          (when electron?
            [:<>
-            [button {:on-click #(.back js/window.history)} [:> ChevronLeft]]
-            [button {:on-click #(.forward js/window.history)} [:> ChevronRight]]
+            [button {:onClick #(.back js/window.history)} [:> ChevronLeft]]
+            [button {:onClick #(.forward js/window.history)} [:> ChevronRight]]
             [separator]])
-         [button {:on-click router/nav-daily-notes
+         [button {:onClick router/nav-daily-notes
                   :title "Open Today's Daily Note"
-                  :active   (= @route-name :home)} [:> Today]]
-         [button {:on-click #(router/navigate :pages)
+                  :aria-pressed (= @route-name :home)} [:> Today]]
+         [button {:onClick #(router/navigate :pages)
                   :title "Open All Pages"
-                  :active   (= @route-name :pages)} [:> FileCopy]]
-         [button {:on-click #(router/navigate :graph)
+                  :aria-pressed (= @route-name :pages)} [:> FileCopy]]
+         [button {:onClick #(router/navigate :graph)
                   :title "Open Graph"
-                  :active   (= @route-name :graph)} [:> BubbleChart]]
+                  :aria-pressed (= @route-name :graph)} [:> BubbleChart]]
          ;; below is used for testing error tracking
-         #_[button {:on-click #(throw (js/Error "error"))
+         #_[button {:onClick #(throw (js/Error "error"))
                     :style {:border "1px solid red"}} [:> Warning]]
-         [button {:on-click #(dispatch [:athena/toggle])
+         [button {:onClick #(dispatch [:athena/toggle])
                   :style    {:width "14rem" :margin-left "1rem" :background (color :background-minus-1)}
-                  :active   @(subscribe [:athena/open])}
+                  :aria-pressed @(subscribe [:athena/open])}
           [:<> [:> Search] [:span "Find or Create a Page"]]]]
 
         [:div (use-style app-header-secondary-controls-style)
@@ -158,15 +158,15 @@
                [:<>
                 [:> Replay]
                 [:span "Re-connect with remote"]]])
-            [button {:on-click #(swap! merge-open? not)
+            [button {:onClick #(swap! merge-open? not)
                      :title "Merge Roam Database"}
              [:> MergeType]]
-            [button {:on-click #(router/navigate :settings)
+            [button {:onClick #(router/navigate :settings)
                      :title "Open Settings"
-                     :active   (= @route-name :settings)}
+                     :aria-pressed (= @route-name :settings)}
              [:> Settings]]
 
-            [button {:on-click #(dispatch [:modal/toggle])
+            [button {:onClick #(dispatch [:modal/toggle])
                      :title "Choose Database"}
              [:div {:style {:display "flex"}}
               [:> Storage {:style {:align-self "center"}}]
@@ -188,15 +188,17 @@
                                         :title "Synchronizing..."})])]]]
 
             [separator]]
-           [button {:style {:min-width "max-content"} :on-click #(dispatch [:get-db/init]) :primary true} "Load Test DB"])
-         [button {:on-click #(dispatch [:theme/toggle])
+           [button {:style {:min-width "max-content"}
+                    :onClick #(dispatch [:get-db/init])
+                    :className "is-primary"} "Load Test DB"])
+         [button {:onClick #(dispatch [:theme/toggle])
                   :title "Toggle Color Scheme"}
           (if @theme-dark
             [:> ToggleOff]
             [:> ToggleOn])]
          [separator]
-         [button {:active   @right-open?
+         [button {:aria-pressed @right-open?
                   :title "Toggle Sidebar"
-                  :on-click #(dispatch [:right-sidebar/toggle])}
+                  :onClick #(dispatch [:right-sidebar/toggle])}
           [:> VerticalSplit {:style {:transform "scaleX(-1)"}}]]]]])))
 

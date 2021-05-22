@@ -19,7 +19,7 @@
 
 (defcard-rg Create-Page
   "Page title increments by more than one each time because we create multiple entities (the child blocks)."
-  [button {:on-click (fn []
+  [button {:onClick (fn []
                        (let [n (:max-eid @db/dsdb)]
                          (d/transact! db/dsdb [{:node/title     (str "Test Title " n)
                                                 :block/uid      (str "uid" n)

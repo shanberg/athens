@@ -99,7 +99,8 @@
   [:div (stylefy/use-style {:margin-left "1em"
                             :z-index (:zindex-dropdown style/ZINDICES)
                             :visibility (when-not (pos? count) "hidden")})
-   [buttons/button {:primary true :on-click #(rf/dispatch [:right-sidebar/open-item uid])} count]])
+   [buttons/button {:className "is-primary"
+                    :onClick #(rf/dispatch [:right-sidebar/open-item uid])} count]])
 
 
 (defn block-drag-over
@@ -200,10 +201,10 @@
      (fn [block linked-ref-data opts]
        (let [{:block/keys [uid string open children _refs]} block
              uid-sanitized-block (s/transform
-                                   (specter-recursive-path #(contains? % :block/uid))
-                                   (fn [{:block/keys [original-uid uid] :as block}]
-                                     (assoc block :block/uid (or original-uid uid)))
-                                   block)
+                                  (specter-recursive-path #(contains? % :block/uid))
+                                  (fn [{:block/keys [original-uid uid] :as block}]
+                                    (assoc block :block/uid (or original-uid uid)))
+                                  block)
              {:search/keys [] :keys [dragging drag-target]} @state
              is-editing  @(rf/subscribe [:editing/is-editing uid])
              is-selected @(rf/subscribe [:selected/is-selected uid])]

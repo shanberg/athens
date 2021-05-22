@@ -178,7 +178,7 @@
          ;; Controls
          [:div (use-style controls-style)
           [button {:style sort-control-style
-                   :on-click (fn [_]
+                   :onClick (fn [_]
                                (swap! s assoc :sort (if (= sort_ :lex)
                                                       :count
                                                       :lex)))}
@@ -186,7 +186,7 @@
           [:span (use-style sort-indicator-style) [:<> [:> ArrowDownward] (if (= sort_ :lex) "Title" "Number")]]
           [:span (str num-filters " Active")]
           [button {:style reset-control-style
-                   :on-click (fn [_]
+                   :onClick (fn [_]
                                (swap! s assoc :items
                                       (reduce-kv
                                        (fn [m k v]

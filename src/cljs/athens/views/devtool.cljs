@@ -194,7 +194,7 @@
                          ""
                          (pr-str cell))]))]))]] ; use the edn-viewer here as well?
        (when (< @limit (count rows))
-         [button {:on-click #(swap! limit + 10)
+         [button {:onClick #(swap! limit + 10)
                   :style {:width "100%"
                           :justify-content "center"
                           :margin "0.25rem 0"}}
@@ -332,7 +332,7 @@
                (let [nav (get navs i)]
                  ^{:key i}
                  [button {:style {:padding "0.125rem 0.25rem"}
-                          :on-click #(swap! state (fn [s]
+                          :onClick #(swap! state (fn [s]
                                                     (-> s
                                                         (update :navs subvec 0 i)
                                                         (dissoc :viewer))))}
@@ -343,12 +343,12 @@
             (for [v applicable-vs]
               (let [click-fn #(swap! state assoc :viewer v)]
                 ^{:key v}
-                [button {:on-click click-fn
-                         :active (= v viewer-name)}
+                [button {:onClick click-fn
+                         :aria-pressed (= v viewer-name)}
                  (name v)]))]]]
          (when (d/db? navved-data)
-           [button {:on-click #(restore-db! navved-data)
-                    :primary true}
+           [button {:onClick #(restore-db! navved-data)
+                    :className "is-primary"}
             "Restore this db"])
          [viewer datafied-data add-nav!]]))))
 
@@ -459,17 +459,16 @@
 
 (defn devtool-prompt-el
   []
-  [button {:on-click #(dispatch [:devtool/toggle])
-           :primary true
+  [button {:onClick #(dispatch [:devtool/toggle])
+           :className "is-primary"
            :style {:font-size "11px"}}
-   [:<>
     [:> Build]
-    [:span "Toggle devtool"]]])
+    [:span "Toggle devtool"]])
 
 
 (defn devtool-close-el
   []
-  [button {:on-click #(dispatch [:devtool/toggle])}
+  [button {:onClick #(dispatch [:devtool/toggle])}
    [:> Clear]])
 
 
@@ -481,12 +480,14 @@
       [:div (use-style container-style)
        [:nav (use-style tabs-style)
         [:div (use-style tabs-section-style)
-         [button {:on-click #(switch-panel :query)
-                  :active (= active-panel :query)}
-          [:<> [:> ShortText] [:span "Query"]]]
-         [button {:on-click #(switch-panel :txes)
-                  :active (= active-panel :txes)}]
-         [:<> [:> History] [:span "Transactions"]]]
+         [button {:onClick #(switch-panel :query)
+                  :aria-pressed (= active-panel :query)}
+          [:> ShortText]
+          [:span "Query"]]
+         [button {:onClick #(switch-panel :txes)
+                  :aria-pressed (= active-panel :txes)}]
+         [:> History]
+         [:span "Transactions"]]
         [devtool-close-el]]
        [:div (use-style panels-style)
         (case active-panel

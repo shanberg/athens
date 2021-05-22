@@ -11,7 +11,7 @@
 
 (defcard-rg Create-Page
   "Press button and then search \"test\" "
-  [button {:on-click (fn []
+  [button {:onClick (fn []
                        (let [n       (inc (:max-eid @db/dsdb))
                              n-child (inc n)]
                          (d/transact! db/dsdb [{:node/title     (str "Test Page " n)

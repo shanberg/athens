@@ -12,6 +12,7 @@
     [athens.views.pages.block-page :as block-page]
     [athens.views.pages.graph :as graph]
     [athens.views.pages.node-page :as node-page]
+    [cljs-styled-components.reagent :refer [defstyled]]
     [cljsjs.react]
     [cljsjs.react.dom]
     [re-frame.core :refer [dispatch subscribe]]
@@ -76,7 +77,7 @@
    :flex-direction "column"})
 
 
-(def sidebar-item-toggle-style
+(defstyled sidebar-item-toggle button
   {:margin "auto 0.5rem auto 0"
    :flex "0 0 auto"
    :width "1.75rem"
@@ -85,9 +86,9 @@
    :border-radius "1000px"
    :cursor "pointer"
    :place-content "center"
-   ::stylefy/manual [[:svg {:transition "all 0.1s ease-out"
-                            :margin "0"}]
-                     [:&.is-open [:svg {:transform "rotate(90deg)"}]]]})
+   "svg" {:transition "all 0.1s ease-out"
+          :margin "0"}
+   "&.is-open svg" {:transform "rotate(90deg)"}})
 
 
 (def sidebar-item-container-style
@@ -246,9 +247,8 @@
                                          ^{:key uid}
                                          [:article (use-style sidebar-item-style)
                                           [:header (use-style sidebar-item-heading-style {:class (when open "is-open")})
-                                           [button {:style    sidebar-item-toggle-style
-                                                    :on-click #(dispatch [:right-sidebar/toggle-item uid])
-                                                    :class    (when open "is-open")}
+                                           [sidebar-item-toggle {:onClick #(dispatch [:right-sidebar/toggle-item uid])
+                                                                 :className (when open "is-open")}
                                             [:> ChevronRight]]
                                            [:h2
                                             (cond
@@ -258,7 +258,7 @@
                                            [:div {:class "controls"}
                                             ;;  [button [:> DragIndicator]]
                                             ;;  [:hr]
-                                            [button {:on-click #(dispatch [:right-sidebar/close-item uid])}
+                                            [button {:onClick #(dispatch [:right-sidebar/close-item uid])}
                                              [:> Close]]]]
                                           (when open
                                             [:div (use-style sidebar-item-container-style)

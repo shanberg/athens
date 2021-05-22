@@ -33,13 +33,13 @@
                   (load-real-db!))]
     (fn []
       [button {:disabled @pressed?
-               :on-click handler} "Load Real Data"])))
+               :onClick handler} "Load Real Data"])))
 
 
 (defn reset-db-button
   []
   (fn []
-    [button {:on-click #(d/reset-conn! db/dsdb (d/empty-db db/schema))} "Reset DB"]))
+    [button {:onClick #(d/reset-conn! db/dsdb (d/empty-db db/schema))} "Reset DB"]))
 
 
 ;;; Devcards

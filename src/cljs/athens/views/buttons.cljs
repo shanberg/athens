@@ -1,11 +1,12 @@
 (ns athens.views.buttons
   (:require
-    [athens.db]
-    [athens.style :refer [color]]
-    [cljsjs.react]
-    [cljsjs.react.dom]
-    [garden.selectors :as selectors]
-    [stylefy.core :as stylefy :refer [use-style]]))
+   [athens.db]
+   [athens.style :refer [color]]
+   [cljs-styled-components.reagent :refer [defstyled]]
+   [cljsjs.react]
+   [cljsjs.react.dom]
+   [garden.selectors :as selectors]
+   [stylefy.core :as stylefy]))
 
 
 ;;; Styles
@@ -70,19 +71,47 @@
                                                        :background (color :body-text-color :opacity-lower)
                                                        :cursor "default"}]]]})
 
+(defstyled button
+  :button {:cursor           "pointer"
+           :padding          "0.375rem 0.625rem"
+           :margin           "0"
+           :font-family      "inherit"
+           :font-size        "inherit"
+           :border-radius    "0.25rem"
+           :font-weight      "500"
+           :border           "none"
+           :display          "inline-flex"
+           :align-items      "center"
+           :color            (color :body-text-color)
+           :background-color "transparent"
+           :transition       "all 0.075s ease"
+           "&:hover, &[aria-pressed='true']" {:color (color :body-text-color)
+                                              :background (color :body-text-color :opacity-lower)}
+           "&:active, &:active:hover" {:background (color :body-text-color :opacity-low)}
+           "&:disabled, &:disabled:active" {:color (color :body-text-color :opacity-low)
+                                            :background (color :body-text-color :opacity-lower)
+                                            :cursor "default"}
+           "> svg" {:margin-block-start "-0.0835em"
+                    :margin-block-end "-0.0835em"
+                    "&:not(:last-child)" {:margin-inline-end "0.251em"}
+                    "&:not(:first-child)" {:margin-inline-start "0.251em"}
+                    "&:first-child:last-child" {:margin-inline-start "-0.25rem"
+                                                :margin-inline-end "-0.25rem"}}
+           "span" {:flex "1 0 auto"
+                   :text-align "left"}
+
+           "kbd" {:margin-inline-start "1rem"
+                  :font-size "85%"}
+           "&.is-primary" {:color (color :link-color)
+                           :background (color :link-color :opacity-lower)
+                           "&:hover" {:background (color :link-color :opacity-low)}
+                           "&:active, :&:hover:active, &[aria-pressed]" {:color "white"
+                                                                         :background (color :link-color)}
+                           "&:disabled, &:disabled:active" {:color (color :body-text-color :opacity-low)
+                                                            :background (color :body-text-color :opacity-lower)
+                                                            :cursor "default"}}})
+
 
 ;;; Components
 
 (stylefy/class "button" buttons-style)
-
-
-(defn button
-  "Keep button interface as close to vanilla hiccup as possible.
-  Dissoc :style :active and :class because we don't want to merge them in directly.
-  Can pass in a :key prop to make react happy, as a :key or ^{:key}. Just works"
-  ([children] [button {} children])
-  ([{:keys [style active primary class] :as props} children]
-   (let [props- (dissoc props :style :active :primary :class)]
-     [:button (use-style (merge buttons-style style)
-                         (merge props- {:class (vec (flatten [(when active "is-active") (when primary "is-primary") class]))}))
-      children])))

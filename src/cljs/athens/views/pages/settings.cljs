@@ -180,11 +180,11 @@
                                 :placeholder " Open Collective Email "
                                 :on-change   #(reset! value (.. % -target -value))
                                 :value       @value}]
-          [button {:primary  true
+          [button {:className "is-primary"
                    :disabled (not (clojure.string/blank? (:email @s)))
-                   :on-click #(handle-submit-email s value)}
+                   :onClick #(handle-submit-email s value)}
            "Submit"]
-          [button {:on-click #(handle-reset-email s value)}
+          [button {:onClick #(handle-reset-email s value)}
            "Reset"]]
          [:aside
           [:p (if (clojure.string/blank? (:email @s))

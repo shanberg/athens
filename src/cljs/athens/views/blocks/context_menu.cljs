@@ -75,9 +75,9 @@
                                                            :left     (str x "px")
                                                            :top      (str y "px")}})
                                       [:div (stylefy/use-style menu-style)
-                                       [button {:on-mouse-down (fn [e] (copy-refs-mouse-down e uid state))}
+                                       [button {:onClick (fn [e] (copy-refs-mouse-down e uid state))}
                                         (if (empty? selected-items)
                                           "Copy block ref"
                                           "Copy block refs")]
-                                       [button {:on-mouse-down (fn [e] (handle-copy-unformatted e uid state))}
+                                       [button {:onClick (fn [e] (handle-copy-unformatted e uid state))}
                                         "Copy unformatted"]]])))})))

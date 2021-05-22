@@ -57,8 +57,8 @@
                    (and inline? show-inline-presence?))
            [:<>
             [button
-             {:on-mouse-enter #(reset! ele (.-currentTarget %))
-              :on-mouse-leave (fn [] (js/setTimeout #(reset! ele nil) 1500))
+             {:onMouseEnter #(reset! ele (.-currentTarget %))
+              :onMouseLeave (fn [] (js/setTimeout #(reset! ele nil) 1500))
               :style          (when inline?
                                 {:position        "absolute"
                                  :left            "-1.5rem"

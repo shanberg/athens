@@ -18,12 +18,12 @@
 
 (defcard-rg Create-Page
   "Press button and then search \"test\" "
-  [button {:on-click handler} "Create Test Pages and Blocks"])
+  [button {:onClick handler} "Create Test Pages and Blocks"])
 
 
 (defcard-rg Reset-to-all-pages
   (fn []
-    [button {:on-click #(do (swap! state* assoc :eval-str (:eval-str initial-state))
+    [button {:onClick #(do (swap! state* assoc :eval-str (:eval-str initial-state))
                             (eval-box!))}
      "Reset"]))
 

@@ -29,19 +29,19 @@
 
 (defcard-rg Primary-Button
   [:div (use-style {:display "grid" :grid-auto-flow "column" :justify-content "flex-start" :grid-gap "0.5rem"})
-   [button {:primary true} "Button"]
-   [button {:primary true} [:> Face]]
-   [button {:primary true} [:<>
+   [button {:className "is-primary"} "Button"]
+   [button {:className "is-primary"} [:> Face]]
+   [button {:className "is-primary"} [:<>
                             [:> Face]
                             [:span "Button"]]]
-   [button {:primary true} [:<>
+   [button {:className "is-primary"} [:<>
                             [:span "Button"]
                             [:> ChevronRight]]]
-   [button {:primary true :disabled true} "Button"]
-   [button {:primary true :disabled true} [:> Face]]
-   [button {:primary true :disabled true} [:<>
+   [button {:className "is-primary" :disabled true} "Button"]
+   [button {:className "is-primary" :disabled true} [:> Face]]
+   [button {:className "is-primary" :disabled true} [:<>
                                            [:> Face]
                                            [:span "Button"]]]
-   [button {:primary true :disabled true} [:<>
+   [button {:className "is-primary" :disabled true} [:<>
                                            [:span "Button"]
                                            [:> ChevronRight]]]])
