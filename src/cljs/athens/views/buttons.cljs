@@ -41,13 +41,13 @@
    :background-color "transparent"
    :transition       "all 0.075s ease"
    ::stylefy/manual [[:&:hover {:background (color :body-text-color :opacity-lower)}]
-                     [:&:active
-                      :&:hover:active
-                      :&.is-active {:color (color :body-text-color)
-                                    :background (color :body-text-color :opacity-lower)}]
-                     [:&:active
-                      :&:hover:active
-                      :&:active.is-active {:background (color :body-text-color :opacity-low)}]
+                     ["&:active"
+                      "&:hover:active"
+                      "&[aria-pressed='true']" {:color (color :body-text-color)
+                                                :background (color :body-text-color :opacity-lower)}]
+                     ["&:active"
+                      "&:hover:active"
+                      "&:active[aria-pressed='true']" {:background (color :body-text-color :opacity-low)}]
                      [:&:disabled :&:disabled:active {:color (color :body-text-color :opacity-low)
                                                       :background (color :body-text-color :opacity-lower)
                                                       :cursor "default"}]
@@ -62,10 +62,10 @@
                      [:&.is-primary {:color (color :link-color)
                                      :background (color :link-color :opacity-lower)}
                       [:&:hover {:background (color :link-color :opacity-low)}]
-                      [:&:active
-                       :&:hover:active
-                       :&.is-active {:color "white"
-                                     :background (color :link-color)}]
+                      ["&:active"
+                       "&:hover:active"
+                       "&[aria-pressed='true']" {:color "white"
+                                                 :background (color :link-color)}]
                       [:&:disabled :&:disabled:active {:color (color :body-text-color :opacity-low)
                                                        :background (color :body-text-color :opacity-lower)
                                                        :cursor "default"}]]]})
@@ -84,5 +84,6 @@
   ([{:keys [style active primary class] :as props} children]
    (let [props- (dissoc props :style :active :primary :class)]
      [:button (use-style (merge buttons-style style)
-                         (merge props- {:class (vec (flatten [(when active "is-active") (when primary "is-primary") class]))}))
+                         (merge props- {:class (vec (flatten [(when primary "is-primary") class]))
+                                        :aria-pressed active}))
       children])))
