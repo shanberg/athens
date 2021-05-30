@@ -1,25 +1,27 @@
 (ns athens.views.blocks.core
   (:require
-    [athens.db :as db]
-    [athens.electron :as electron]
-    [athens.style :as style]
-    [athens.util :as util :refer [mouse-offset vertical-center specter-recursive-path]]
-    [athens.views.blocks.autocomplete-search :as autocomplete-search]
-    [athens.views.blocks.autocomplete-slash :as autocomplete-slash]
-    [athens.views.blocks.bullet :as bullet]
-    [athens.views.blocks.content :as content]
-    [athens.views.blocks.context-menu :as context-menu]
-    [athens.views.blocks.drop-area-indicator :as drop-area-indicator]
-    [athens.views.blocks.toggle :as toggle]
-    [athens.views.blocks.tooltip :as tooltip]
-    [athens.views.buttons :as buttons]
-    [athens.views.presence :as presence]
-    [cljsjs.react]
-    [cljsjs.react.dom]
-    [com.rpl.specter :as s]
-    [re-frame.core :as rf]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy]))
+   ["@material-ui/icons/Lock" :default Lock]
+   [athens.db :as db]
+   [athens.electron :as electron]
+   [athens.style :as style :refer [color]]
+   [athens.util :as util :refer [mouse-offset vertical-center specter-recursive-path]]
+   [athens.views.blocks.autocomplete-search :as autocomplete-search]
+   [athens.views.blocks.autocomplete-slash :as autocomplete-slash]
+   [athens.views.blocks.bullet :as bullet]
+   [athens.views.blocks.content :as content]
+   [athens.views.blocks.context-menu :as context-menu]
+   [athens.views.blocks.drop-area-indicator :as drop-area-indicator]
+   [athens.views.blocks.toggle :as toggle]
+   [athens.views.blocks.tooltip :as tooltip]
+   [athens.views.blocks.user-presence-indicator :refer [user-presence-indicator]]
+   [athens.views.buttons :as buttons]
+   [athens.views.presence :as presence]
+   [cljsjs.react]
+   [cljsjs.react.dom]
+   [com.rpl.specter :as s]
+   [re-frame.core :as rf]
+   [reagent.core :as r]
+   [stylefy.core :as stylefy]))
 
 
 ;; Styles
@@ -101,6 +103,18 @@
 
 
 ;; Components
+
+(def lock-el-style
+  {:grid-area "bullet"
+   :font-size "1rem"
+   :display "flex"
+   :place-content "center"
+   :place-items "center"
+   :color (color :body-text-color :opacity-med)
+   ::stylefy/manual [[:svg {:font-size "1rem"}]]})
+
+(defn lockEl []
+  [:span (stylefy/use-style lock-el-style) [:> Lock]])
 
 (defn block-refs-count-el
   [count uid]
@@ -195,20 +209,21 @@
    [block-el block linked-ref-data {}])
   ([_block linked-ref-data _opts]
    (let [{:keys [linked-ref initial-open linked-ref-uid parent-uids]} linked-ref-data
-         state (r/atom {:string/local      nil
-                        :string/previous   nil
-                        :search/type       nil              ; one of #{:page :block :slash :hashtag}
-                        :search/results    nil
-                        :search/query      nil
-                        :search/index      nil
-                        :dragging          false
-                        :drag-target       nil
-                        :last-keydown      nil
-                        :context-menu/x    nil
-                        :context-menu/y    nil
-                        :context-menu/show false
-                        :caret-position    nil
-                        :show-editable-dom   false
+         state (r/atom {:string/local       nil
+                        :string/previous    nil
+                        :search/type        nil             ; one of #{:page :block :slash :hashtag}
+                        :search/results     nil
+                        :search/query       nil
+                        :search/index       nil
+                        :dragging           false
+                        :drag-target        nil
+                        :last-keydown       nil
+                        :context-menu/x     nil
+                        :context-menu/y     nil
+                        :context-menu/show  false
+                        :caret-position     nil
+                        :show-editable-dom  false
+                        :being-edited-by    "sid"
                         :linked-ref/open (or (false? linked-ref) initial-open)})]
 
      (fn [block linked-ref-data opts]
@@ -234,6 +249,7 @@
           {:class          ["block-container"
                             (when (and dragging (not is-selected)) "dragging")
                             (when is-editing "is-editing")
+                            (when (:being-edited-by @state) "is-being-edited-by")
                             (when is-selected "is-selected")
                             (when (and (seq children) open) "show-tree-indicator")
                             (when (and (false? initial-open) (= uid linked-ref-uid)) "is-linked-ref")]
@@ -254,13 +270,21 @@
           (when (= (:drag-target @state) :above) [drop-area-indicator/drop-area-indicator {:grid-area "above"}])
 
           [:div.block-body
-           (when (seq children)
-             [toggle/toggle-el uid-sanitized-block state linked-ref])
            (when (:context-menu/show @state)
              [context-menu/context-menu-el uid-sanitized-block state])
-           [bullet/bullet-el block state linked-ref]
-           [tooltip/tooltip-el uid-sanitized-block state]
-           [content/block-content-el block state]
+          
+          (if (:being-edited-by @state)
+            [lockEl]
+            [:<>
+             (when (seq children)
+               [toggle/toggle-el uid-sanitized-block state linked-ref])
+             [bullet/bullet-el block state linked-ref]
+             [tooltip/tooltip-el uid-sanitized-block state]])
+
+             [content/block-content-el block state]
+
+          (when (:being-edited-by @state)
+            [user-presence-indicator {:username (:being-edited-by @state)}])
 
            (when (and (> (count _refs) 0) (not= :block-embed? opts))
              [block-refs-count-el (count _refs) uid])]
