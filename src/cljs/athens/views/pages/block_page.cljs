@@ -8,7 +8,6 @@
     [athens.util :refer [now-ts]]
     [athens.views.blocks.core :as blocks]
     [athens.views.breadcrumbs :refer [breadcrumbs-list breadcrumb]]
-    #_[athens.views.buttons :refer [button]]
     [athens.views.pages.node-page :as node-page]
     [cljsjs.react]
     [cljsjs.react.dom]
@@ -114,15 +113,13 @@
 
         [:div.block-page (use-style node-page/page-style {:data-uid uid})
          ;; Parent Context
-         [:span {:style {:color "gray"}}
-          [breadcrumbs-list {:style {:font-size "1.2rem"}}
+          [breadcrumbs-list
            (doall
-             (for [{:keys [node/title block/string] breadcrumb-uid :block/uid} parents]
-               ^{:key breadcrumb-uid}
-               [breadcrumb {:key (str "breadcrumb-" breadcrumb-uid)
-                            :on-click #(breadcrumb-handle-click % uid breadcrumb-uid)}
-                [:span {:style {:pointer-events "none"}}
-                 [parse-renderer/parse-and-render (or title string)]]]))]]
+            (for [{:keys [node/title block/string] breadcrumb-uid :block/uid} parents]
+              ^{:key breadcrumb-uid}
+              [breadcrumb {:key (str "breadcrumb-" breadcrumb-uid)
+                           :on-click #(breadcrumb-handle-click % uid breadcrumb-uid)}
+               [parse-renderer/parse-and-render (or title string)]]))]
 
          ;; Header
          [:h1 (merge
