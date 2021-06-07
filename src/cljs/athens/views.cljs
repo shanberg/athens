@@ -1,20 +1,22 @@
 (ns athens.views
   (:require
-    ["@material-ui/core/Snackbar" :as Snackbar]
-    [athens.config]
-    [athens.style]
-    [athens.subs]
-    [athens.views.app-toolbar :as app-toolbar]
-    [athens.views.athena :refer [athena-component]]
-    [athens.views.devtool :refer [devtool-component]]
-    [athens.views.filesystem :as filesystem]
-    [athens.views.left-sidebar :as left-sidebar]
-    [athens.views.pages.core :as pages]
-    [athens.views.right-sidebar :as right-sidebar]
-    [athens.views.spinner :refer [initial-spinner-component]]
-    [re-frame.core :as rf]
-    [reagent.core :as r]
-    [stylefy.core :as stylefy]))
+   ["@material-ui/core/styles" :refer [createMuiTheme ThemeProvider]]
+   ["@material-ui/core/Snackbar" :as Snackbar]
+   [athens.config]
+   [athens.style :as style]
+   [athens.subs]
+   [athens.views.app-toolbar :as app-toolbar]
+   [athens.views.athena :refer [athena-component]]
+   [athens.views.devtool :refer [devtool-component]]
+   [athens.views.filesystem :as filesystem]
+   [athens.views.left-sidebar :as left-sidebar]
+   [athens.views.pages.core :as pages]
+   [athens.views.right-sidebar :as right-sidebar]
+   [athens.views.wait-message :refer [wait-message]]
+   [athens.views.spinner :refer [initial-spinner-component]]
+   [re-frame.core :as rf]
+   [reagent.core :as r]
+   [stylefy.core :as stylefy]))
 
 
 ;; Styles
@@ -48,16 +50,38 @@
 
 
 (rf/reg-sub
-  :db/snack-msg
-  (fn [db]
-    (:db/snack-msg db)))
+ :db/snack-msg
+ (fn [db]
+   (:db/snack-msg db)))
 
 
 (rf/reg-event-db
-  :show-snack-msg
-  (fn [db [_ msg-opts]]
-    (js/setTimeout #(rf/dispatch [:show-snack-msg {}]) 4000)
-    (assoc db :db/snack-msg msg-opts)))
+ :show-snack-msg
+ (fn [db [_ msg-opts]]
+   (js/setTimeout #(rf/dispatch [:show-snack-msg {}]) 4000)
+   (assoc db :db/snack-msg msg-opts)))
+
+
+
+(def athensThemeDark
+  (createMuiTheme
+   (clj->js
+    {:palette {:primary {:main "#0075e1"}
+               :type "dark"
+               :paper (style/color :background-color)
+               :default (style/color :background-plus-2)}
+     :typography {:fontFamily "IBM Plex Sans"}
+     :shape {:borderRadius 10}
+     :props {:MuiButtonBase {:disableRipple true
+                             :disableElevation true}
+             :MuiCircularProgress {:disableShrink true
+                                   :size "3rem"
+                                   :thickness 2}}
+     :overrides {:MuiDialog
+                 {:paper {:background (style/color :background-plus-1 :opacity-low)
+                          :backdropFilter "blur(14px)"}}
+                 :MuiCircularProgress
+                 {:indeterminate {:animationDuration "600ms"}}}})))
 
 
 (defn main
@@ -65,8 +89,9 @@
   (let [loading    (rf/subscribe [:loading?])
         modal      (rf/subscribe [:modal])]
     (fn []
-      [:<>
+      [:> ThemeProvider {:theme athensThemeDark}
        [alert]
+       [wait-message]
        (let [{:keys [msg type]} @(rf/subscribe [:db/snack-msg])]
          [m-snackbar
           {:message msg
