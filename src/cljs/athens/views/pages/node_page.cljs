@@ -1,6 +1,7 @@
 (ns athens.views.pages.node-page
   (:require
     ["@material-ui/core/Popover" :as Popover]
+    ["@material-ui/core/Breadcrumbs" :default Breadcrumbs]
     ["@material-ui/icons/Bookmark" :default Bookmark]
     ["@material-ui/icons/BookmarkBorder" :default BookmarkBorder]
     ["@material-ui/icons/BubbleChart" :default BubbleChart]
@@ -417,20 +418,20 @@
     (fn [_]
       (let [{:keys [block parents embed-id]} @state
             block (db/get-block-document (:db/id block))]
-        [:<>
-         [breadcrumbs-list {:style reference-breadcrumbs-style}
-          (doall
+        (when (seq parents)
+          [:> Breadcrumbs
+           (doall
             (for [{:keys [node/title block/string block/uid]} parents]
               [breadcrumb {:key       (str "breadcrumb-" uid)
                            :on-click #(do (let [new-B (db/get-block-document [:block/uid uid])
                                                 new-P (drop-last parents)]
                                             (swap! state assoc :block new-B :parents new-P)))}
-               [parse-and-render (or title string) uid]]))]
-         [:div.block-embed
-          [blocks/block-el
-           (recursively-modify-block-for-embed block embed-id)
-           linked-ref-data
-           {:block-embed? true}]]]))))
+               [parse-and-render (or title string) uid]]))])
+        [:div.block-embed
+         [blocks/block-el
+          (recursively-modify-block-for-embed block embed-id)
+          linked-ref-data
+          {:block-embed? true}]]))))
 
 
 (defn linked-ref-el

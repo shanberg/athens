@@ -1,10 +1,11 @@
 (ns athens.style
   (:require
-    [athens.config :as config]
-    [athens.util :as util]
-    [garden.color :refer [opacify hex->hsl]]
-    [stylefy.core :as stylefy]
-    [stylefy.reagent :as stylefy-reagent]))
+   ["@material-ui/core/styles" :refer [createMuiTheme withStyles]]
+   [athens.config :as config]
+   [athens.util :as util]
+   [garden.color :refer [opacify hex->hsl]]
+   [stylefy.core :as stylefy]
+   [stylefy.reagent :as stylefy-reagent]))
 
 
 (def THEME-DARK
@@ -96,6 +97,30 @@
           "---"
           (symbol alpha)
           ")"))))
+
+
+;; Material UI Theme
+
+(def athens-theme-dark
+  (createMuiTheme
+   (clj->js
+    {:palette {:primary {:main "#0075e1"}
+               :type "dark"
+               :paper (color :background-color)
+               :default (color :background-plus-2)}
+     :typography {:fontFamily "IBM Plex Sans"}
+     :props {:MuiBreadcrumbs {:separator "/"}}
+     :overrides {:MuiBreadcrumbs {:root {:color "inherit"
+                                         :border "1px solid red"}
+                                  :li {:border "1px solid green"}}}})))
+
+
+(defn global-css
+  []
+  #(withStyles (clj->js {"@global" {:background "yellow"
+                           ".MuiBreadcrumbs-root" {:color "green"
+                                                   :background "blue"}}})
+               (fn [] nil)))
 
 
 ;; Base Styles

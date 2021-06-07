@@ -1,5 +1,7 @@
 (ns athens.views.pages.block-page
   (:require
+    ["@material-ui/core/Breadcrumbs" :default Breadcrumbs]
+    ["@material-ui/core/Link" :default BreadcrumbItem]
     ["@material-ui/icons/Link" :default Link]
     [athens.db :as db]
     [athens.parse-renderer :as parse-renderer]
@@ -7,7 +9,6 @@
     [athens.style :refer [color]]
     [athens.util :refer [now-ts]]
     [athens.views.blocks.core :as blocks]
-    [athens.views.breadcrumbs :refer [breadcrumbs-list breadcrumb]]
     [athens.views.pages.node-page :as node-page]
     [cljsjs.react]
     [cljsjs.react.dom]
@@ -113,22 +114,23 @@
 
         [:div.block-page (use-style node-page/page-style {:data-uid uid})
          ;; Parent Context
-          [breadcrumbs-list
-           (doall
-            (for [{:keys [node/title block/string] breadcrumb-uid :block/uid} parents]
-              ^{:key breadcrumb-uid}
-              [breadcrumb {:key (str "breadcrumb-" breadcrumb-uid)
-                           :on-click #(breadcrumb-handle-click % uid breadcrumb-uid)}
-               [parse-renderer/parse-and-render (or title string)]]))]
+         [:> Breadcrumbs
+          (doall
+           (for [{:keys [node/title block/string] breadcrumb-uid :block/uid} parents]
+             ^{:key breadcrumb-uid}
+             [:> BreadcrumbItem {:component "button"
+                       :key (str "breadcrumb-" breadcrumb-uid)
+                       :on-click #(breadcrumb-handle-click % uid breadcrumb-uid)}
+              [parse-renderer/parse-and-render (or title string)]]))]
 
          ;; Header
          [:h1 (merge
-                (use-style title-style {:data-uid uid :class "block-header"})
-                {:on-click (fn [e]
-                             (.. e preventDefault)
-                             (if (.. e -shiftKey)
-                               (navigate-uid uid e)
-                               (dispatch [:editing/uid uid])))})
+               (use-style title-style {:data-uid uid :class "block-header"})
+               {:on-click (fn [e]
+                            (.. e preventDefault)
+                            (if (.. e -shiftKey)
+                              (navigate-uid uid e)
+                              (dispatch [:editing/uid uid])))})
           [autosize/textarea
            {:id          (str "editable-uid-" uid)
             :value       (:string/local @state)
@@ -157,14 +159,14 @@
              ;; [button {:disabled true} [(r/adapt-react-class FilterList)]]]
              [:div (use-style node-page/references-list-style)
               (doall
-                (for [[group-title group] refs]
-                  [:div (use-style node-page/references-group-style {:key (str "group-" group-title)})
-                   [:h4 (use-style node-page/references-group-title-style)
-                    [:a {:on-click #(navigate-uid (:block/uid @(parse-renderer/pull-node-from-string group-title)))} group-title]]
-                   (doall
-                     (for [block group]
-                       [:div (use-style node-page/references-group-block-style {:key (str "ref-" (:block/uid block))})
-                        [node-page/ref-comp block]]))]))]]])]))))
+               (for [[group-title group] refs]
+                 [:div (use-style node-page/references-group-style {:key (str "group-" group-title)})
+                  [:h4 (use-style node-page/references-group-title-style)
+                   [:a {:on-click #(navigate-uid (:block/uid @(parse-renderer/pull-node-from-string group-title)))} group-title]]
+                  (doall
+                   (for [block group]
+                     [:div (use-style node-page/references-group-block-style {:key (str "ref-" (:block/uid block))})
+                      [node-page/ref-comp block]]))]))]]])]))))
 
 
 (defn page

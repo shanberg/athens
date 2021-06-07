@@ -12,21 +12,21 @@
 ;; Styles
 
 
-(def breadcrumbs-list-style
-  {::stylefy/manual [["&.root"
-                      {:font-size "85%"
-                       :color (color :body-text-color :opacity-high)}]
-                     ["&.muted" {:color (color :body-text-color :opacity-med)}]
-                     [".MuiBreadcrumbs-separator" {:opacity (:opacity-low OPACITIES)
-                                                   :margin-left "0.25em"
-                                                   :margin-right "0.25em"}]]})
+;; (def breadcrumbs-list-style
+;;   {::stylefy/manual [["&.root"
+;;                       {:font-size "85%"
+;;                        :color (color :body-text-color :opacity-high)}]
+;;                      ["&.muted" {:color (color :body-text-color :opacity-med)}]
+;;                      [".MuiBreadcrumbs-separator" {:opacity (:opacity-low OPACITIES)
+;;                                                    :margin-left "0.25em"
+;;                                                    :margin-right "0.25em"}]]})
 
 
-(def breadcrumb-style
-  {::stylefy/manual [["&.MuiLink-button" {:color "inherit"}]
-                     ["*" {:pointer-events "none"}]
-                     ["li:last-child button" {:color (color :body-text-color)}]
-                     ["button:hover" {:color (color :link-color)}]]})
+;; (def breadcrumb-style
+;;   {::stylefy/manual [["&.MuiLink-button" {:color "inherit"}]
+;;                      ["*" {:pointer-events "none"}]
+;;                      ["li:last-child button" {:color (color :body-text-color)}]
+;;                      ["button:hover" {:color (color :link-color)}]]})
 
 
 ;; Components
@@ -36,9 +36,8 @@
   ([children] [breadcrumbs-list {} children])
   ([{:keys [style separator className] :as props} children]
    (let [props- (dissoc props :style)]
-     [:> Breadcrumbs (use-style (merge breadcrumbs-list-style style)
-                                (merge {:classes {:root "root"}
-                                        :separator (or separator "/")} props-))
+     [:> Breadcrumbs (use-style (merge style)
+                                (merge {:classes {:root "root"}} props-))
       children])))
 
 
@@ -46,6 +45,6 @@
   ([children] [breadcrumb {} children])
   ([{:keys [style] :as props} children]
    (let [props- (dissoc props :style)]
-     [:> Link (use-style (merge breadcrumb-style style)
+     [:> Link (use-style (merge style)
                          (merge props- {:component "button"}))
       children])))
