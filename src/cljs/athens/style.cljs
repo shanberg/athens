@@ -1,10 +1,11 @@
 (ns athens.style
   (:require
-    [athens.config :as config]
-    [athens.util :as util]
-    [garden.color :refer [opacify hex->hsl]]
-    [stylefy.core :as stylefy]
-    [stylefy.reagent :as stylefy-reagent]))
+   ["@material-ui/core/styles" :refer [createMuiTheme withStyles]]
+   [athens.config :as config]
+   [athens.util :as util]
+   [garden.color :refer [opacify hex->hsl]]
+   [stylefy.core :as stylefy]
+   [stylefy.reagent :as stylefy-reagent]))
 
 
 (def THEME-DARK
@@ -96,6 +97,52 @@
           "---"
           (symbol alpha)
           ")"))))
+
+
+;; Material UI Theme
+
+(def athens-theme-light
+  (createMuiTheme
+   (clj->js
+    {:palette {:primary {:main "#0075e1"}
+               :type "dark"
+               :paper (color :background-color)
+               :default (color :background-plus-2)}
+     :typography {:fontFamily "IBM Plex Sans"}
+     :props {:MuiBreadcrumbs {:separator "/"}
+             :MuiButtonBase {:disableRipple true}}
+     :overrides {:MuiBreadcrumbs {:root {:color "inherit"}
+                                  :li {:border "1px solid green"}}
+                 :MuiButtonBase {:root {:color "inherit"}}
+                 :MuiButton {:root {:color "inherit"
+                                    :padding "0.375rem 0.625rem"
+                                    :textTransform "none"}}
+                 :MuiIconButton {:root {:borderRadius 4;
+                                        :color "inherit"
+                                        :padding "0.35rem 0.6rem"}}
+                 :MuiSwitch {:root {:width 42
+                                    :height 26
+                                    :padding 0}
+                             :switchBase {:padding 1}
+                             :thumb {:width 24
+                                     :height 24}
+                             :track {:borderRadius "100px"
+                                     :opacity 1}}}})))
+
+(def athens-theme-dark
+  (createMuiTheme
+   athens-theme-light
+   (clj->js
+    {:palette {:type "dark"}})))
+
+
+(defn global-css
+  []
+  #(withStyles (clj->js {"@global" {:background "yellow"
+                           ".MuiBreadcrumbs-root" {:color "green"
+                                                   :background "blue"}}})
+               (fn [] nil)))
+
 
 
 ;; Base Styles

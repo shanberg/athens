@@ -1,5 +1,7 @@
 (ns athens.views.app-toolbar
   (:require
+    ["@material-ui/core/Button" :default Button]
+    ["@material-ui/core/IconButton" :default IconButton]
     ["@material-ui/icons/BubbleChart" :default BubbleChart]
     ["@material-ui/icons/CheckCircle" :default CheckCircle]
     ["@material-ui/icons/ChevronLeft" :default ChevronLeft]
@@ -118,7 +120,7 @@
          [filesystem/merge-modal merge-open?])
        [:header (use-style app-header-style)
         [:div (use-style app-header-control-section-style)
-         [button {:active   @left-open?
+         [:> IconButton {:active   @left-open?
                   :title "Toggle Navigation Sidebar"
                   :on-click #(dispatch [:left-sidebar/toggle])}
           [:> Menu]]
@@ -126,24 +128,24 @@
          ;; TODO: refactor to effects
          (when electron?
            [:<>
-            [button {:on-click #(.back js/window.history)} [:> ChevronLeft]]
-            [button {:on-click #(.forward js/window.history)} [:> ChevronRight]]
+            [:> IconButton {:on-click #(.back js/window.history)} [:> ChevronLeft]]
+            [:> IconButton {:on-click #(.forward js/window.history)} [:> ChevronRight]]
             [separator]])
-         [button {:on-click router/nav-daily-notes
+         [:> IconButton {:on-click router/nav-daily-notes
                   :title "Open Today's Daily Note"
                   :active   (= @route-name :home)} [:> Today]]
-         [button {:on-click #(router/navigate :pages)
+         [:> IconButton {:on-click #(router/navigate :pages)
                   :title "Open All Pages"
                   :active   (= @route-name :pages)} [:> FileCopy]]
-         [button {:on-click #(router/navigate :graph)
+         [:> IconButton {:on-click #(router/navigate :graph)
                   :title "Open Graph"
                   :active   (= @route-name :graph)} [:> BubbleChart]]
          ;; below is used for testing error tracking
          #_[button {:on-click #(throw (js/Error "error"))
                     :style {:border "1px solid red"}} [:> Warning]]
-         [button {:on-click #(dispatch [:athena/toggle])
-                  :style    {:width "14rem" :margin-left "1rem" :background (color :background-minus-1)}
-                  :active   @(subscribe [:athena/open])}
+         [:> Button {:on-click #(dispatch [:athena/toggle])
+                     :style    {:max-width "max-content" :white-space "nowrap" :margin-left "1rem"}
+                     :active   @(subscribe [:athena/open])}
           [:<> [:> Search] [:span "Find or Create a Page"]]]]
 
         [:div (use-style app-header-secondary-controls-style)
@@ -151,22 +153,22 @@
            [:<>
             [presence/presence-popover-info]
             (when (= @socket-status :closed)
-              [button
+              [:> IconButton
                {:onClick #(ws/start-socket!
                             (assoc @remote-graph-conf
                                    :reload-on-init? true))}
                [:<>
                 [:> Replay]
                 [:span "Re-connect with remote"]]])
-            [button {:on-click #(swap! merge-open? not)
+            [:> IconButton {:on-click #(swap! merge-open? not)
                      :title "Merge Roam Database"}
              [:> MergeType]]
-            [button {:on-click #(router/navigate :settings)
+            [:> IconButton {:on-click #(router/navigate :settings)
                      :title "Open Settings"
                      :active   (= @route-name :settings)}
              [:> Settings]]
 
-            [button {:on-click #(dispatch [:modal/toggle])
+            [:> IconButton {:on-click #(dispatch [:modal/toggle])
                      :title "Choose Database"}
              [:div {:style {:display "flex"}}
               [:> Storage {:style {:align-self "center"}}]
@@ -188,14 +190,14 @@
                                         :title "Synchronizing..."})])]]]
 
             [separator]]
-           [button {:style {:min-width "max-content"} :on-click #(dispatch [:get-db/init]) :primary true} "Load Test DB"])
-         [button {:on-click #(dispatch [:theme/toggle])
+           [:> IconButton {:style {:min-width "max-content"} :on-click #(dispatch [:get-db/init]) :primary true} "Load Test DB"])
+         [:> IconButton {:on-click #(dispatch [:theme/toggle])
                   :title "Toggle Color Scheme"}
           (if @theme-dark
             [:> ToggleOff]
             [:> ToggleOn])]
          [separator]
-         [button {:active   @right-open?
+         [:> IconButton {:active   @right-open?
                   :title "Toggle Sidebar"
                   :on-click #(dispatch [:right-sidebar/toggle])}
           [:> VerticalSplit {:style {:transform "scaleX(-1)"}}]]]]])))
