@@ -25,7 +25,6 @@
 (def sidebar-style
   {:justify-self "stretch"
    :overflow "hidden"
-   :width "0"
    :grid-area "secondary-content"
    :display "flex"
    :justify-content "space-between"
@@ -36,7 +35,7 @@
    :box-shadow [["0 -100px 0 " (color :background-minus-1) ", inset 1px 0 " (color :background-minus-1)]]
    ::stylefy/manual [[:svg {:color (color :body-text-color :opacity-high)}]
                      [:&.is-closed {:width "0"}]
-                     [:&.is-open {:width "32vw"}]
+                     [:&.is-open {:width "var(--width)"}]
                      ["::-webkit-scrollbar" {:background (color :background-minus-1)
                                              :width "0.5rem"
                                              :height "0.5rem"}]
@@ -47,13 +46,14 @@
 
 (def sidebar-content-style
   {:display "flex"
-   :flex "1 1 32vw"
+   :flex "1 1 100%"
    :flex-direction "column"
-   :margin-left "0"
+   :width "var(--width)"
    :overflow-y "auto"
+   :transition "opacity 0.35s ease-out, transform 0.35s ease-out"
    ::stylefy/supports {"overflow-y: overlay"
                        {:overflow-y "overlay"}}
-   ::stylefy/manual [[:&.is-closed {:margin-left "-32vw"
+   ::stylefy/manual [[:&.is-closed {:transform "translateX(calc(var(--width) * -0.5))"
                                     :opacity 0}]
                      [:&.is-open {:opacity 1}]]})
 
@@ -205,7 +205,7 @@
   "Resizable: use local atom for width, but dispatch value to re-frame on mouse up. Instantiate local value with re-frame width too."
   [_ _ rf-width]
   (let [state (r/atom {:dragging false
-                       :width rf-width})
+                       :width (or rf-width 32)})
         move-handler     (fn [e]
                            (when (:dragging @state)
                              (.. e preventDefault)
@@ -230,9 +230,10 @@
        :reagent-render         (fn [open? items _]
                                  [:div (merge (use-style sidebar-style
                                                          {:class ["right-sidebar" (if open? "is-open" "is-closed")]})
-                                              {:style (cond-> {}
-                                                        (:dragging @state) (assoc :transition-duration "0s")
-                                                        open? (assoc :width (str (:width @state) "vw")))})
+                                              {:style
+                                               (cond-> {}
+                                                 true (assoc "--width" (str (:width @state) "vw"))
+                                                 (:dragging @state) (assoc :transition-duration "0s"))})
                                   [:div (use-style panel-drag-handle-style
                                                    {:on-mouse-down #(swap! state assoc :dragging true)
                                                     :class (when (:dragging @state) "is-dragging")})]
