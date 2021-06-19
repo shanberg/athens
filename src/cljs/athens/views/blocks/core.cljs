@@ -85,9 +85,9 @@
                                                   :right      0
                                                   :bottom     0
                                                   :left       0}]]
+                     [:&:hover [:> [:.user-avatar {:transform "translateX(-2em)"}]]]
                      [:.block-content {:grid-area  "content"
-                                       :min-height "1.5em"}
-                                       [:&:hover [:+ [:.user-avatar {:transform "translateX(-2em)"}]]]]
+                                       :min-height "1.5em"}]
                      [:&.is-linked-ref {:background-color (style/color :background-plus-2)}]
                      ;; Inset child blocks
                      [:.block-container {:margin-left "2rem"
@@ -276,11 +276,10 @@
            [tooltip/tooltip-el uid-sanitized-block state]
            [content/block-content-el block state is-presence]
 
-          #_[presence/presence-popover-info uid {:inline? true}]
-          [toolbar-presence/inline-presence uid]
-
            (when (and (> (count _refs) 0) (not= :block-embed? opts))
              [block-refs-count-el (count _refs) uid])]
+
+          [toolbar-presence/inline-presence uid]
 
           [autocomplete-search/inline-search-el block state]
           [autocomplete-slash/slash-menu-el block state]
